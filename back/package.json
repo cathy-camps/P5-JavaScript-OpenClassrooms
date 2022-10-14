@@ -5,12 +5,15 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \no test specified\" ",
-    "start": "node server"
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4",
     "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.8.5"
   }
 }
