@@ -14,14 +14,14 @@ const getProducts = async() => {
   })
 }
 
-//afficher les données de l'API
+//création des éléments et affichage des données de l'API
 const printKanaps = async() => {
   await getProducts();
   for(let product of products) {
 //insertion élément "a"
   let link = document.createElement("a");
   document.querySelector("#items").appendChild(link);
-  link.href = "./product.html?id=${product._id}";
+  link.href = `./product.html?id=${product._id}`;
 
 //insertion balise <article>
   let article = document.createElement("article");
