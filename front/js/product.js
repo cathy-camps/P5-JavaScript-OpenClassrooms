@@ -1,4 +1,6 @@
 
+import {getBasket} from "./cart.js"
+
 const urlValue = window.location.search;
 const urlParams = new URLSearchParams(urlValue);
 const paramId = urlParams.get('id');
@@ -9,7 +11,7 @@ function fetchProduct() {
   fetch(`http://localhost:3000/api/products/${paramId}`)
     .then((res) => res.json())
     .then((kanap) => {
-
+      
 //récupération des éléments HTML
       let imgKanap = document.querySelector(".item__img");
       let title = document.getElementById('title');
@@ -33,10 +35,47 @@ for (let color of kanap.colors) {
   select.appendChild(choice);
 }
 
+//récupération des données saisies //ajout du produit dans le panier
 console.log(kanap, "success")
+return kanap
     })
     .catch((error) => {
       window.alert("Une erreur est survenue !");
     })
+  
 }
-fetchProduct();
+    
+let kanap = fetchProduct();
+
+function addToCart(kanap) {
+  //initialisation d'une constante pour la quantité
+  const quantity = document.querySelector('#quantity');
+  //noter le choix de l'utilisateur dans une variable
+  const quantityChoice = quantity.value;
+  //sélecteur du bouton 'ajouter au panier' + envoyer le panier
+  document.getElementById("addToCart").addEventListener("click", (button) => {
+  //event.preventDefault();
+    console.log("Envoyé")
+    //récupère le panier (cart = tableau)
+    let cart = getBasket()
+    
+    //gérer la quantité pour savoir si le produit est déjà dans le panier
+
+    let foundKanap = cart.findIndex(p => p.id == paramId);
+    if (cart[foundKanap] != undefined) {
+      if (cart[foundKanap].quantity <= 100) {
+        cart[foundKanap].quantity = cart[foundKanap].quantity + quantityChoice;
+      }
+    } else {
+      cart.push({ quantity: quantityChoice, color: "red", id: paramId })
+    }
+    saveCart(cart);
+  })
+}
+addToCart(kanap);
+//enregistrer le panier dans localstorage 
+function saveCart(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+window.open((`http://localhost:3000/api/products/`), "product.js", "cart.js");
