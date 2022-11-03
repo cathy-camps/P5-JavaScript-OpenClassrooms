@@ -1,5 +1,5 @@
 
-import {getBasket} from "./cart.js"
+import {getCart} from "./cart.js"
 
 const urlValue = window.location.search;
 const urlParams = new URLSearchParams(urlValue);
@@ -18,13 +18,11 @@ function fetchProduct() {
       let descriptionKanap = document.getElementById('description');
       let priceKanap = document.getElementById('price');
 //insertion du texte descriptif des éléments     
-      imgKanap.innerHTML = `<img src= "${kanap.imageUrl}" alt="${kanap.altTxt}">`
+      imgKanap.inserAdjacentHTML = `<img src= "${kanap.imageUrl}" alt="${kanap.altTxt}">`
       title.textContent = `${kanap.name}`;
-      priceKanap.innerHTML = `${kanap.price}`;
-      descriptionKanap.innerHTML = `${kanap.description}`;
+      priceKanap.textContent = `${kanap.price}`;
+      descriptionKanap.textContent = `${kanap.description}`;
       
-//initialisation d'une constante pour stocker les couleurs
-const colors = kanap.colors
 //récupérer le sélecteur pour le choix des couleurs
 let select = document.querySelector("select");
 //création d'une boucle pour sélectionner la couleur du produit
@@ -34,47 +32,48 @@ for (let color of kanap.colors) {
   choice.value = color;
   select.appendChild(choice);
 }
-
-//récupération des données saisies //ajout du produit dans le panier
 console.log(kanap, "success")
 return kanap
     })
     .catch((error) => {
       window.alert("Une erreur est survenue !");
-    })
-  
+    }) 
 }
     
 let kanap = fetchProduct();
 
-function addToCart(kanap) {
-  //initialisation d'une constante pour la quantité
-  const quantity = document.querySelector('#quantity');
-  //noter le choix de l'utilisateur dans une variable
-  const quantityChoice = quantity.value;
-  //sélecteur du bouton 'ajouter au panier' + envoyer le panier
+
   document.getElementById("addToCart").addEventListener("click", (button) => {
-  //event.preventDefault();
+    //récupération des données saisies //ajout du produit dans le panier
+      //initialisation d'une constante pour la quantité
+      const quantity = document.querySelector('#quantity');
+      //noter le choix de l'utilisateur dans une variable
+      const quantityChoice = quantity.value;
+      //sélecteur du bouton 'ajouter au panier' + envoyer le panier
+      //initialisation d'une constante pour stocker les couleurs
+      const color = document.querySelector('#colors');
+      const colorChoice = color.value;
+      console.log(colorChoice, quantityChoice);
+  
+    //event.preventDefault();
     console.log("Envoyé")
     //récupère le panier (cart = tableau)
-    let cart = getBasket()
+    let cart = getCart()
     
-    //gérer la quantité pour savoir si le produit est déjà dans le panier
-
+  //gérer la quantité pour savoir si le produit est déjà dans le panier
     let foundKanap = cart.findIndex(p => p.id == paramId);
     if (cart[foundKanap] != undefined) {
       if (cart[foundKanap].quantity <= 100) {
         cart[foundKanap].quantity = cart[foundKanap].quantity + quantityChoice;
       }
     } else {
-      cart.push({ quantity: quantityChoice, color: "red", id: paramId })
+      cart.push({ quantity: quantityChoice, color: colorChoice, id: paramId })
     }
     saveCart(cart);
   })
-}
-addToCart(kanap);
+
 //enregistrer le panier dans localstorage 
-function saveCart(cart) {
+export function saveCart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
