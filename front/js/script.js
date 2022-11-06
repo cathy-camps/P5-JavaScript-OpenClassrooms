@@ -37,13 +37,14 @@ const printKanaps = async() => {
   let h3 = document.createElement("h3");
   article.appendChild(h3);
   h3.classList.add("productName");
-  h3.innerHTML = product.name;
+  h3.textContent = product.name;
 
 //insertion balise <p>
   let p = document.createElement("p");
   article.appendChild(p);
   p.classList.add("productDescription");
-  p.innerHTML = product.description;
+  p.textContent = product.description;
 }}
 //affichage de tous les produits
 printKanaps();
+
