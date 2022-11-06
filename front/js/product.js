@@ -1,3 +1,5 @@
+import {getCart} from "./cart.js"
+
 const urlValue = window.location.search;
 const urlParams = new URLSearchParams(urlValue);
 const paramId = urlParams.get('id');
@@ -36,10 +38,9 @@ return kanap
       window.alert("Une erreur est survenue !");
     }) 
 }
-    
+
 let kanap = fetchProduct();
 
-window.onload=function () {
   document.getElementById("addToCart").addEventListener("click", (button) => {
     //récupération des données saisies //ajout du produit dans le panier
       //initialisation d'une constante pour la quantité
@@ -51,13 +52,15 @@ window.onload=function () {
       const color = document.querySelector('#colors');
       const colorChoice = color.value;
       console.log(colorChoice, quantityChoice);
-      button.preventDefault();
+
+      //button.preventDefault();
       console.log("Envoyé")
-  
-      //récupère le panier (cart = tableau)
-    function getCart(cart) {
-  //gérer la quantité pour savoir si le produit est déjà dans le panier
-    let foundKanap = cart.findIndex(p => p.id == paramId);
+
+//récupère le panier (cart = tableau)
+let cart = getCart()
+
+//gérer la quantité pour savoir si le produit est déjà dans le panier 
+let foundKanap = cart.findIndex(p => p.id == paramId);
     if (cart[foundKanap] != undefined) {
       if (cart[foundKanap].quantity <= 100) {
         cart[foundKanap].quantity = cart[foundKanap].quantity + quantityChoice;
@@ -66,11 +69,11 @@ window.onload=function () {
       cart.push({ quantity: quantityChoice, color: colorChoice, id: paramId })
     }
     saveCart(cart);
-  }
-})
-}
+  })
 
 //enregistrer le panier dans localstorage 
 export function saveCart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
+
+window.open((`http://localhost:3000/api/products/`), "cart.js");
