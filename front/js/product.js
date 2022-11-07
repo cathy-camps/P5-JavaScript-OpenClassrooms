@@ -17,7 +17,7 @@ function fetchProduct() {
       let descriptionKanap = document.getElementById('description');
       let priceKanap = document.getElementById('price');
 //insertion du texte descriptif des éléments     
-      imgKanap.inserAdjacentHTML = `<img src= "${kanap.imageUrl}" alt="${kanap.altTxt}">`
+      imgKanap.inserAdjacentHTML = ("afterbegin",`<img src= "${kanap.imageUrl}" alt="${kanap.altTxt}">`);
       title.textContent = `${kanap.name}`;
       priceKanap.textContent = `${kanap.price}`;
       descriptionKanap.textContent = `${kanap.description}`;
@@ -46,18 +46,16 @@ let kanap = fetchProduct();
       //initialisation d'une constante pour la quantité
       const quantity = document.querySelector('#quantity');
       //noter le choix de l'utilisateur dans une variable
-      const quantityChoice = quantity.value;
+      const quantityChoice = parseInt(quantity.value);
       //sélecteur du bouton 'ajouter au panier' + envoyer le panier
       //initialisation d'une constante pour stocker les couleurs
       const color = document.querySelector('#colors');
       const colorChoice = color.value;
       console.log(colorChoice, quantityChoice);
-
+    //récupère le panier (cart = tableau)
+    let cart = getCart()
       //button.preventDefault();
       console.log("Envoyé")
-
-//récupère le panier (cart = tableau)
-let cart = getCart()
 
 //gérer la quantité pour savoir si le produit est déjà dans le panier 
 let foundKanap = cart.findIndex(p => p.id == paramId);
@@ -66,14 +64,18 @@ let foundKanap = cart.findIndex(p => p.id == paramId);
         cart[foundKanap].quantity = cart[foundKanap].quantity + quantityChoice;
       }
     } else {
-      cart.push({ quantity: quantityChoice, color: colorChoice, id: paramId })
+      cart.push({quantity: quantityChoice, color: colorChoice, id: paramId })
     }
-    saveCart(cart);
+    saveCart();
   })
-
+  
 //enregistrer le panier dans localstorage 
 export function saveCart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-window.open((`http://localhost:3000/api/products/`), "cart.js");
+//enregistrer dans une variable le produit récupéré
+let cart = getCart();
+
+//window.open((`http://localhost:3000/api/products/`), "cart.js");
+//window.locatopn.assign("cart.html")
