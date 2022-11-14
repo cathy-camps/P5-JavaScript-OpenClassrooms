@@ -3,7 +3,7 @@ const items = document.getElementById('items');
 
 //requête de l'API, récupérer les données
 async function getProducts() {
-  await fetch("http://localhost:3000/api/products/")
+  return await fetch("http://localhost:3000/api/products/")
     .then((res) => res.json())
     .then((productList) => {
       let products = productList
@@ -16,15 +16,13 @@ async function getProducts() {
   }
 
 //création des éléments et affichage des données de l'API
-function printKanaps() {
-  let products = getProducts();
-  console.log(products)
-      for (let product in products) {
+  async function printKanaps() {
+  await getProducts().then((products)=> {
+      for (let product in products) { 
         //insertion élément "a"
         let link = document.createElement("a");
         document.querySelector("#items").appendChild(link);
         link.href = `./product.html?id=${product._id}`;
-        console.log("a");
         //insertion balise <article>
         let article = document.createElement("article");
         link.appendChild(article);
@@ -46,9 +44,10 @@ function printKanaps() {
         article.appendChild(p);
         p.classList.add("productDescription");
         p.textContent = product.description;
-      }
+  }
+});
     }
+  
 //affichage de tous les produits
 console.log("hello")
 printKanaps();
-console.log(printKanaps)
