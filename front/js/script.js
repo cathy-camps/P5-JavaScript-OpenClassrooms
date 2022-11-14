@@ -2,49 +2,53 @@
 const items = document.getElementById('items');
 
 //requête de l'API, récupérer les données
-const getProducts = async() => {
+async function getProducts() {
   await fetch("http://localhost:3000/api/products/")
-  .then((res) => res.json())
-  .then((productList) => {
-    products = productList
-    console.log(products)
-  })
-  .catch((error) => {
-    window.alert("Une erreur est survenue !")
-  })
-}
+    .then((res) => res.json())
+    .then((productList) => {
+      let products = productList
+      console.log(products);
+      return products;
+    })
+    .catch((error) => {
+      window.alert("Une erreur est survenue !");
+    });
+  }
 
 //création des éléments et affichage des données de l'API
-const printKanaps = async() => {
-  await getProducts();
-  for(let product of products) {
-//insertion élément "a"
-  let link = document.createElement("a");
-  document.querySelector("#items").appendChild(link);
-  link.href = `./product.html?id=${product._id}`;
+function printKanaps() {
+  let products = getProducts();
+  console.log(products)
+      for (let product in products) {
+        //insertion élément "a"
+        let link = document.createElement("a");
+        document.querySelector("#items").appendChild(link);
+        link.href = `./product.html?id=${product._id}`;
+        console.log("a");
+        //insertion balise <article>
+        let article = document.createElement("article");
+        link.appendChild(article);
 
-//insertion balise <article>
-  let article = document.createElement("article");
-  link.appendChild(article);
+        //insertion des images
+        let img = document.createElement("img");
+        img.src = `${product.imageUrl}`;
+        img.alt = `${product.altTxt}`;
+        article.appendChild(img);
 
-//insertion des images
-  let img = document.createElement("img");
-  img.src = `${product.imageUrl}`;
-  img.alt = `${product.altTxt}`;
-  article.appendChild(img);
+        //insertion titre h3
+        let h3 = document.createElement("h3");
+        article.appendChild(h3);
+        h3.classList.add("productName");
+        h3.textContent = product.name;
 
-//insertion titre h3
-  let h3 = document.createElement("h3");
-  article.appendChild(h3);
-  h3.classList.add("productName");
-  h3.textContent = product.name;
-
-//insertion balise <p>
-  let p = document.createElement("p");
-  article.appendChild(p);
-  p.classList.add("productDescription");
-  p.textContent = product.description;
-}}
+        //insertion balise <p>
+        let p = document.createElement("p");
+        article.appendChild(p);
+        p.classList.add("productDescription");
+        p.textContent = product.description;
+      }
+    }
 //affichage de tous les produits
+console.log("hello")
 printKanaps();
-
+console.log(printKanaps)

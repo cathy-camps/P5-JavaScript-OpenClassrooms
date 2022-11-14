@@ -6,7 +6,7 @@ const paramId = urlParams.get('id');
 console.log(paramId)
 
 //récupérer le produit de l'API via son ID
-function fetchProduct() {
+export function fetchProduct() {
   fetch(`http://localhost:3000/api/products/${paramId}`)
     .then((res) => res.json())
     .then((kanap) => {
@@ -40,13 +40,13 @@ return kanap
   }
 let kanap = fetchProduct();
 
- //sélecteur du bouton 'ajouter au panier' + envoyer le panier
+ //sélecteur du bouton 'ajouter au panier' 
   document.getElementById("addToCart").addEventListener("click", (button) => {
   //récupération des données saisies //ajout du produit dans le panier
   //initialisation d'une constante pour la quantité
     const quantity = document.querySelector('#quantity');
   //noter le choix de l'utilisateur dans une variable
-    const quantityChoice = parseInt(quantity.value);
+    const quantityChoice = quantity.value;
   //initialisation d'une constante pour stocker les couleurs
     const color = document.querySelector('#colors');
     const colorChoice = color.value;
@@ -55,7 +55,11 @@ let kanap = fetchProduct();
     let cart = getCart(); 
   //button.preventDefault();
     console.log("Envoyé");
-
+    /*addToCart();*/
+  
+    //ajouter les produits au panier
+   /* function addToCart(product){
+    let cart = getCart();*/
   //gérer la quantité pour savoir si le produit est déjà dans le panier 
     let foundKanap = cart.findIndex(p => p.id == paramId);
     if (cart[foundKanap] != undefined) {
@@ -63,15 +67,15 @@ let kanap = fetchProduct();
         cart[foundKanap].quantity = cart[foundKanap].quantity + quantityChoice;
       }
     } else {
+      product.quantity = 1;
       cart.push({ quantity: quantityChoice, color: colorChoice, id: paramId });
-      //window.location.href = "./cart.html"
     }
     saveCart(cart);
-    //cart.splice();
   })
 
-  //enregistrer le panier dans localstorage 
-    export function saveCart(cart) {
+  export function saveCart(cart) {
     localStorage.setItem("cart", JSON.stringify(cart));
     console.log(saveCart)
   }
+
+ window.location.href = "./cart.html";
