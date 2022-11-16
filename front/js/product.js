@@ -1,16 +1,17 @@
-import {getCart} from "./cart.js"
 
 const urlValue = window.location.search;
 const urlParams = new URLSearchParams(urlValue);
-const paramId = urlParams.get('id');
+console.log(urlParams)
+const paramId = urlParams.get("id");
 console.log(paramId)
 
 //récupérer le produit de l'API via son ID
-export function fetchProduct() {
+  function fetchProduct() {
   fetch(`http://localhost:3000/api/products/${paramId}`)
     .then((res) => res.json())
-    .then((kanap) => {
-      
+   // console.log("success")
+    .then((kanap) => {  
+//console.log(kanap);
 //récupération des éléments HTML
       let imgKanap = document.querySelector(".item__img");
       let title = document.getElementById('title');
@@ -42,25 +43,19 @@ let kanap = fetchProduct();
 
  //sélecteur du bouton 'ajouter au panier' 
   document.getElementById("addToCart").addEventListener("click", (button) => {
-  //récupération des données saisies //ajout du produit dans le panier
-  //initialisation d'une constante pour la quantité
     const quantity = document.querySelector('#quantity');
-  //noter le choix de l'utilisateur dans une variable
     const quantityChoice = quantity.value;
-  //initialisation d'une constante pour stocker les couleurs
+//initialisation d'une constante pour stocker les couleurs
     const color = document.querySelector('#colors');
     const colorChoice = color.value;
     console.log(colorChoice, quantityChoice);
-    //récupère le panier (cart = tableau)
-    let cart = getCart(); 
-  //button.preventDefault();
+//récupère le panier (cart = tableau)
+//let cart = getCart(); 
+    button.preventDefault();
     console.log("Envoyé");
-    /*addToCart();*/
-  
-    //ajouter les produits au panier
-   /* function addToCart(product){
-    let cart = getCart();*/
+ 
   //gérer la quantité pour savoir si le produit est déjà dans le panier 
+  function getCart (cart) {
     let foundKanap = cart.findIndex(p => p.id == paramId);
     if (cart[foundKanap] != undefined) {
       if (cart[foundKanap].quantity <= 100) {
@@ -70,12 +65,13 @@ let kanap = fetchProduct();
       product.quantity = 1;
       cart.push({ quantity: quantityChoice, color: colorChoice, id: paramId });
     }
-    saveCart(cart);
-  })
+    saveCart();
+  }})
 
-  export function saveCart(cart) {
-    localStorage.setItem("cart", JSON.stringify(cart));
-    console.log(saveCart)
-  }
+function saveCart() {
+  localStorage.setItem("cart", JSON.stringify(cart));
+  console.log(saveCart)
+}
 
- window.location.href = "./cart.html";
+
+//window.location.href = "./cart.html";

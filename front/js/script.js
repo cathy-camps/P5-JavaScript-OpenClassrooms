@@ -3,7 +3,7 @@ const items = document.getElementById('items');
 
 //requête de l'API, récupérer les données
 async function getProducts() {
-  return await fetch("http://localhost:3000/api/products/")
+  return await fetch(`http://localhost:3000/api/products/`)
     .then((res) => res.json())
     .then((productList) => {
       let products = productList
@@ -18,7 +18,9 @@ async function getProducts() {
 //création des éléments et affichage des données de l'API
   async function printKanaps() {
   await getProducts().then((products)=> {
-      for (let product in products) { 
+    const productList = products;
+    console.log(typeof(productList));
+      for (const product of productList) { 
         //insertion élément "a"
         let link = document.createElement("a");
         document.querySelector("#items").appendChild(link);
