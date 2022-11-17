@@ -42,36 +42,49 @@ return kanap
 let kanap = fetchProduct();
 
  //sélecteur du bouton 'ajouter au panier' 
-  document.getElementById("addToCart").addEventListener("click", (button) => {
+ function addToCart(kanap) {
+    document.getElementById("addToCart").addEventListener("click", (button) => {
+//initialisation d'une constante pour stocker les couleurs et la quantité
     const quantity = document.querySelector('#quantity');
     const quantityChoice = quantity.value;
-//initialisation d'une constante pour stocker les couleurs
     const color = document.querySelector('#colors');
     const colorChoice = color.value;
     console.log(colorChoice, quantityChoice);
-//récupère le panier (cart = tableau)
-//let cart = getCart(); 
-    button.preventDefault();
-    console.log("Envoyé");
- 
-  //gérer la quantité pour savoir si le produit est déjà dans le panier 
-  function getCart (cart) {
-    let foundKanap = cart.findIndex(p => p.id == paramId);
-    if (cart[foundKanap] != undefined) {
-      if (cart[foundKanap].quantity <= 100) {
-        cart[foundKanap].quantity = cart[foundKanap].quantity + quantityChoice;
+      let cart = getProductsStorage();
+      //console.log(cart)
+      let foundKanap = cart.find(p => p.id == paramId);
+      if (cart[foundKanap] != undefined) {
+        cart[foundKanap].quantity++;
+        if (cart[foundKanap].quantity <= 100) {
+          cart[foundKanap].quantity = cart[foundKanap].quantity + quantityChoice;
+        }
+      } else {
+        cart.push({ quantity: quantityChoice, color: colorChoice, id: paramId });
       }
-    } else {
-      product.quantity = 1;
-      cart.push({ quantity: quantityChoice, color: colorChoice, id: paramId });
+      saveCart(cart);
+      //console.log(saveCart)
+      //button.preventDefault();
+      console.log("Envoyé");
+    //window.location.href = "./cart.html";
+    })
     }
-    saveCart();
-  }})
 
-function saveCart() {
+addToCart(kanap);
+  //récupérer les produits du localStorage
+      function getProductsStorage() {
+      let items = localStorage.getItem("cart")
+      //console.log(items)
+        //tester si le panier est vide 
+        if (items == null) {
+          alert: "Votre panier est vide !"
+          return []
+        } else {
+          return JSON.parse(items)
+        }
+      }
+
+function saveCart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
-  console.log(saveCart)
+  console.log(cart)
 }
 
-
-//window.location.href = "./cart.html";
