@@ -58,16 +58,14 @@ function addToCart(kanap) {
         quantity: quantityChoice,
         id: paramId,
       }
-      console.log(productChoice)
-
       let foundKanap = cart.find((cart => cart.id == paramId) && (cart => c.color == cart.color));
       if (foundKanap != null && foundKanap.quantity <= 100) {
-        productChoice.forEach (foundKanap.quantityChoice++);
+        productChoice.forEach (foundKanap.quantityChoice += cart.quantity);
       } else { 
         cart.push(productChoice);
+        console.log(productChoice)
       }
    saveCart(cart);
-  //console.log("Envoyé");
   //window.location.href = "./cart.html";
     })};
 //ajouter au panier
@@ -75,16 +73,16 @@ function addToCart(kanap) {
 
   //const newProduct = productChoice;
 
-  function update (newProduct){
-    let cart = getProductsStorage();
+function newProduct (kanap){
         for (let i = 0; i<newProduct.length; i++){
           if(newProduct[i].id == id){
             newProduct[i].value = value;
             break;
           }
           addToCart(kanap);
-        }};
-      //console.log(newProduct);
+        }
+        saveCart(cart);
+      };
 
 //sauvegarder le panier dans localStorage
 function saveCart(cart) {
