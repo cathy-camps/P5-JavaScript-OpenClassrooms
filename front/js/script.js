@@ -17,7 +17,8 @@ async function getProducts() {
 
 //création des éléments et affichage des données de l'API
   async function printKanaps() {
-  await getProducts().then((products)=> {
+  await getProducts()
+  .then((products)=> {
     const productList = products;
     console.log(typeof(productList));
       for (const product of productList) { 
