@@ -1,15 +1,16 @@
-//récupérer les produits du localStorage
-function getProductsStorage() {
-    let cart = localStorage.getItem("cart");
-    //tester si le panier est vide 
-    if (cart == null) {
-        alert: "Votre panier est vide !"
-        return [];
-    } else {
-        return JSON.parse(cart);
-    }
-};
 
+let newCartStorage = localStorage.getItem("newCart");
+//console.log(newCartStorage)
+let product = JSON.parse(newCartStorage);
+console.log(product);
+
+   
+
+//tester si le panier est vide 
+if (product === null){
+alert: "Votre panier est vide !"
+};
+    
 //récupérer l'index des produits du LS
 const key = {}
 for (let i = 0; i < localStorage.length; i++) {
@@ -17,73 +18,59 @@ for (let i = 0; i < localStorage.length; i++) {
     console.log(`Item at ${i}: ${productValue}`);
 }
 
-//convertir le LS en array
-let products = localStorage;
-console.log(products);
-let newCart = Object.keys(products).map(function(key){
-    return [(key), products[key]];
-}
-);
-//console.log(newCart);
-
-//on récupère le nouvel array comprenant (cart + newCart)
-let newArray = newCart.concat(products);
-console.log(newArray);
-
 //on met à jour le nouvel array
-function update(newArray) {
-    if (newArray.length === O) {
-        localStorage.removeItem("products");
+function update(newCartStorage) {
+    if (newCartStorage.length === O) {
+        localStorage.removeItem("newCart");
     }else {
-        localStorage.setItem("products", JSON.stringify(newArray));
+        localStorage.setItem("newCart", JSON.stringify(product));
     }
+    console.log(update(newCartStorage));
 }
 
 //on déclare une constante pour récupérer le prix, la photo et le texte alt de chaque produit du panier 
 const productDetails = {
-    price: products.price,
-    image: products.imageUrl,
-    textAlt: products.altTxt,
+    price: product.price,
+    image: product.imageUrl,
+    textAlt: product.altTxt,
+    id : product._id,
 }
 
 //requêter l'API pour récupérer les images et le prix du produit
-function getProductsDetailsApi(newArray) {
-        newArray.forEach((products) => {
-        fetch(`http://localhost:3000/api/products/`)
-        .then((products) => products.json())
+const displayProductsInLS = () => {
+    if (product !== null) {
+        console.log(newCartStorage)
+        for (let i = 0; i < product.length; i++) {
+        fetch(`http://localhost:3000/api/products/${product._id}`)
+        .then((res) => res.json())
         .then((productDetails) => {
         console.log(productDetails);
-        })
-    .catch ((error) => {
-    window.alert("Une erreur est survenue !");    
-});
-    })};
-
-//création des éléments et affichage des produits du panier
-function printKanaps() {
                 //insertion de la balise article
-                if(products != null) {
-                getProductsDetailsApi(products);
                 const parent = document.querySelector("#cart__items");
                 const article = document.createElement("article");
                 article.classList.add("#cart__items");
                 parent.appendChild(article);
+                //article.setAttribute("data-id",`{key}`);
                 console.log(article);
+                //insertion de la div qui accueillera les images
+                const divImg = document.createElement("div");
+                parent.appendChild(divImg);
+                divImg.className = (".cart__item__img");
                 //insertion des images
                 let img = document.createElement("img");
-                document.querySelector(".cart__item__img")
-                img.src = `${products.imageUrl}`;
-                img.alt = `${products.altTxt}`;
-                article.appendChild(img);
-
-                /*
+                document.querySelector(".cart__item__img");
+                img.src = `${product.imageUrl}`;
+                img.alt = `${product.altTxt}`;
+                divImg.appendChild(img);
+                console.log(img)
+                
                 //insertion de la quantité et des couleurs
                 const quantity = document.querySelector(".cart__item__content__settings__quantity", "p")
-                const quantityChoice = quantity.value;
+                //const quantityChoice = quantity.value;
                 const color = document.querySelector(".cart__item__content__description", "p")
-                const colorChoice = color.value;
-                console.log(colorChoice, quantityChoice);
-                const id = id.value;
+                //const colorChoice = color.value;
+                //console.log(colorChoice, quantityChoice);
+                //const id = id.value;
 
                 //insertion du titre et de la description
                 const content = document.createElement("div");
@@ -94,26 +81,29 @@ function printKanaps() {
                 let h2 = document.createElement("h2");
                 article.appendChild(h2);
                 h2.classList.add("cart__item__content__description");
-                h2.textContent = products.description;
+                h2.textContent = product.description;
 
                 const colors = document.createElement("p");
-                color.textContent = `${products.color}`
+                //color.textContent = `${product.color}`
                 const price = document.createElement("p");
                 price.textContent = `${key.price}`;
 
                 content.appendChild(description);
                 description.appendChild(h2);
-                description.appendChild(color);
+                //description.appendChild(color);
                 description.appendChild(price);    
-            }*/
-}
-}
-//printKanaps();
+                       })
+                .catch((error) => {
+                    window.alert("Une erreur est survenue !");
+                })
+        };
         
+    }}
 //pouvoir retirer un produit du panier
 function removeFromCart(product_id) {
     let cart = getCart();
     cart = cart.filter(p => p.id != product_id);
+    console.log(product_id)
     saveCart(cart);
 }
 
@@ -153,29 +143,29 @@ function getNumberProduct() {
     return number;
 }
 
-getProductsDetailsApi(newArray);
+displayProductsInLS();
 
 /*---------------------formulaire-------------------------------------*/
-
-
-/**let getForm = document.querySelector("cart__order__form__question");
+/*let getForm = document.querySelector("cart__order__form__question");
 //ecouter la modification du prénom
-getForm.firstName.addeventListener('change', function() {
+getForm.firstName.addeventListener('change', function () {
     validFirstName(this);
 });
+
 //écouter la modification du prénom
 let firstNameForm = document.getElementById("#firstName");
 const validFirstName = function(inputFirstName) {
     let firstNameRegExp = new RegExp(
     '([A-Z][a-z]*)([\\s\\\'-][A-Z][a-z]*)*', 'g'
-    )};
+    )
     let testFirstName = firstNameRegExp.test(inputFirstName.value);
-      console.log(testFirstName);
+    console.log(testFirstName);
+};
 
+//écouter la modification du nom
 getForm.lastName.addeventListener('change', function () {
     validLastName(this);
 });
-//écouter la modification du nom
 let lastNameForm = document.getElementById("#lastName");
 const validLastName = function (inputLastName) {
     let lastNameRegExp = new RegExp(
@@ -185,7 +175,7 @@ const validLastName = function (inputLastName) {
 let testLastName = lastNameRegExp.test(inputLastName.value);
 console.log(testLastName);
 //récupération balise message d'erreur     
-/*let firstNameErrorMsg = inputFirstName.nextElementSibling;
+let firstNameErrorMsg = inputFirstName.nextElementSibling;
 //test de l'expression régulière
   if (testFirstName) {
     small.innerText = "Adresse valide";
@@ -237,7 +227,7 @@ getForm.email.addeventListener('change', function () {
 });
 
 //ecouter le button commander
-/*document.querySelector(`cart__order__form input[type="submit"]`).addEventListener("click", (e) => {
+document.querySelector(`cart__order__form input[type="submit"]`).addEventListener("click", (e) => {
 e.preventDefault();
 //vérifier si un champ est valide sinon renvoyer un message d'erreur
     let inputs = document.querySelectorAll(`cart__order__form input[name="firstName", name="lastName", name="address", name="email"]`).reportValidity();
@@ -248,11 +238,11 @@ e.preventDefault();
             break;
         }
     }
-document.querySelector(`cart__order__form input[name="firstName"]`).setCustomValidity/**(message personnalisé);*/
-/*if (valid) {
+document.querySelector(`cart__order__form input[name="firstName"]`).setCustomValidity/**(message personnalisé);
+if (valid) {
 console.log("le formulaire est ok")
 window.alert ("Formulaire envoyé");
 } else 
 window.alert("Erreur : veuillez vérifier votre saisie");
-
-//récupérer le formulaire et l'envoyer au serveur */
+//récupérer le formulaire et l'envoyer au serveur 
+*/
