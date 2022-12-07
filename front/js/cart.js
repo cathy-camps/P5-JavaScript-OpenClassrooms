@@ -2,9 +2,7 @@
 let newCartStorage = localStorage.getItem("newCart");
 //console.log(newCartStorage)
 let product = JSON.parse(newCartStorage);
-console.log(product);
-
-   
+//console.log(product);
 
 //tester si le panier est vide 
 if (product === null){
@@ -14,37 +12,33 @@ alert: "Votre panier est vide !"
 //récupérer l'index des produits du LS
 const key = {}
 for (let i = 0; i < localStorage.length; i++) {
-    let productValue = localStorage.key(i);
-    console.log(`Item at ${i}: ${productValue}`);
+    let productValue = localStorage.getItem(localStorage.key(i)) || "";
+    //let newKey = JSON.parse(productValue);
+    console.log(productValue);
+    //console.log(`Item at ${i}: ${productValue}`);
 }
 
 //on met à jour le nouvel array
-function update(newCartStorage) {
+function update(newProduct) {
     if (newCartStorage.length === O) {
         localStorage.removeItem("newCart");
     }else {
         localStorage.setItem("newCart", JSON.stringify(product));
     }
-    console.log(update(newCartStorage));
+    console.log(newProduct);
 }
 
-//on déclare une constante pour récupérer le prix, la photo et le texte alt de chaque produit du panier 
-const productDetails = {
-    price: product.price,
-    image: product.imageUrl,
-    textAlt: product.altTxt,
-    id : product._id,
-}
+
 
 //requêter l'API pour récupérer les images et le prix du produit
 const displayProductsInLS = () => {
     if (product !== null) {
-        console.log(newCartStorage)
+        //console.log(newCartStorage)
         for (let i = 0; i < product.length; i++) {
-        fetch(`http://localhost:3000/api/products/${product._id}`)
+        fetch(`http://localhost:3000/api/products/`)
         .then((res) => res.json())
-        .then((productDetails) => {
-        console.log(productDetails);
+        .then((product) => {
+        console.log(product);
                 //insertion de la balise article
                 const parent = document.querySelector("#cart__items");
                 const article = document.createElement("article");
@@ -62,7 +56,7 @@ const displayProductsInLS = () => {
                 img.src = `${product.imageUrl}`;
                 img.alt = `${product.altTxt}`;
                 divImg.appendChild(img);
-                console.log(img)
+                //console.log(img)
                 
                 //insertion de la quantité et des couleurs
                 const quantity = document.querySelector(".cart__item__content__settings__quantity", "p")
