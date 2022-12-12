@@ -29,7 +29,6 @@ console.log(paramId)
       select.appendChild(choice);
       }
       //console.log("success")
-      addToCart(cart);
       return kanap;
 })
     .catch ((error) => {
@@ -39,6 +38,8 @@ console.log(paramId)
 
 fetchProduct();
 let cartInStorage = [];
+let productChoice = [];
+const productId = `${paramId}`;
 
 //sélecteur du bouton 'ajouter au panier' + ajouter les produits sélectionnés dans le panier  
     function addToCart() {
@@ -58,28 +59,58 @@ let cartInStorage = [];
   else if ((quantityChoice > 0 && quantityChoice <= 100) && (quantityChoice != 0 && colorChoice != "")); 
   {
 //on récupère le produit à ajouter dans le panier 
-  const productChoice = {
+  productChoice = {
         productColor: colorChoice,
         productQuantity: Number(quantityChoice),
         productId: paramId,
       }; 
+  //object : console.log(productChoice) 
       cartInStorage.push(productChoice);
     }
-    updateCart();
     saveCart(cartInStorage);
-    console.log(cartInStorage);
+  //array : console.log(cartInStorage);
   });
 }
 addToCart();
 //window.location.href = "./cart.html";
-
+ 
 function saveCart(cartInStorage) {
+let cart = JSON.parse(localStorage.getItem("cartInStorage"));
+if(cart == null) {
+  localStorage.setItem("cartInStorage", JSON.stringify(cartInStorage))
+}else{
+  cart.forEach((item) => {
+    console.log(item) //objet
+    if (
+      item.productId == productChoice.productId && item.productColor == productChoice.productColor
+    ) {
+      item.productQuantity = item.productQuantity + productChoice.productQuantity;
+      item.productQuantity++;
+    } else {
+      cartInStorage.push(item);
+      localStorage.setItem("cartInStorage", JSON.stringify(cartInStorage));
+    }
+  });
+}};
+
+/*
+//création d'un objet JSON, le convertir en string and stores the string as "cartInStorage"
+function saveCart(cartInStorage) { 
+let cart = JSON.stringify(cartInStorage);
 localStorage.setItem("cartInStorage", JSON.stringify(cartInStorage));
-//console.log(localStorage);
-}
+
+//récupères le string et la convertit en objet JS
+let retrieveString = localStorage.getItem("cartInStorage");
+const parseObject = JSON.parse(retrieveString);
+
+//modifier l'objet, le convertir en string et remettre le cart existant dans le LS
+parseObject.name = newName;
+const stringifyForStorage = JSON.stringify(parseObject);
+localStorage.setItem("cartInStorage", stringifyForStorage);*/
+
 //récupérer les produits du LS
 //let newArray = [];
-function getFromLS () {
+/*function getFromLS () {
   let cart = localStorage.getItem("cartInStorage");
   if (cart == null) {
     return [];
@@ -89,7 +120,7 @@ function getFromLS () {
 }
 //console.log(getFromLS());
 
-const updateCart = () => {
+const updateCart = (foundKanap) => {
   let cart = getFromLS();
   let foundKanap = cart;
   cart.forEach(() => {
@@ -106,8 +137,5 @@ const updateCart = () => {
 }
 }};
 saveCart(cartInStorage);
-console.log("Envoyé");
-
-
-
+console.log("Envoyé");*/
 
