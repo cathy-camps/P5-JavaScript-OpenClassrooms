@@ -1,4 +1,3 @@
-
 const urlValue = window.location.search;
 const urlParams = new URLSearchParams(urlValue);
 //console.log(urlParams)
@@ -38,16 +37,16 @@ console.log(paramId)
 })
 };
 
-let cart = fetchProduct();
+fetchProduct();
+let cartInStorage = [];
 
 //sélecteur du bouton 'ajouter au panier' + ajouter les produits sélectionnés dans le panier  
-    function addToCart(cart) {
+    function addToCart() {
     document.getElementById("addToCart").addEventListener("click", (button) => {
     button.preventDefault(); 
 //initialisation des constantes pour stocker les références du produit, et le choix de l'utilisateur
     const quantityChoice = document.querySelector('#quantity').value;
     const colorChoice = document.querySelector('#colors').value;
-    console.log(colorChoice, quantityChoice);
     
 //message d'alerte si les quantité et les couleurs ne sont pas saisies
   if (colorChoice <= 0 || colorChoice == null) {
@@ -64,60 +63,51 @@ let cart = fetchProduct();
         productQuantity: Number(quantityChoice),
         productId: paramId,
       }; 
-      //addNewProductToCart();
-      console.log(productChoice);
-
-      let cartInStorage = [];
       cartInStorage.push(productChoice);
-      console.log(cartInStorage);
-
-//gérer les données du LS
-//sauvegarder les données du LS
-const saveCart = {
-      set : function(cart, cartInStorage) {
-            if (!cart || !cartInStorage) {return;}
-            if(typeof cart === "object"){
-                 cartInStorage = JSON.stringify(cartInStorage);
-            }
-            localStorage.setItem(cart, cartInStorage);
-      }};  
-
-//récupérer les données du LS      
-const getCart = {
-      get : function(cart) {
-            let cartInStorage = localStorage.getItem(cart);
-            if(!cartInStorage) {return;}
-            if(cartInStorage[0] === "{"){
-            value = JSON.parse(cartInStorage);
-            }
-            return getCart;
-            }};    
-     
-//vérifier si le panier contient un nouveau produit avant de le stocker dans le LS
-const addNewProductToCart = () => {
-      let cartInStorage = getCart;
-if (cartInStorage) {
-//recherche de l'id et de la couleur du produit  
-  let foundKanap = cartInStorage(cart).find(((p) => p.productId == paramId) && ((p) => productColor.color == colorChoice));
-  console.log(paramId);
-//on ajoute le nouveau produit sélectionné dans le LS
-  if (foundKanap) {
-  let newCart = productChoice.forEach(parseInt(foundKanap.quantityChoice += foundKanap.colorChoice), newCart++);
-  foundKanap.quantityChoice = newCart;
-  saveCart;
-  addNewProductToCart();
-  alert("votre produit a été ajouté au panier");
-      cartInStorage.push(newCart);
-      } 
-// si le panier est vide    
-     else { 
-       cartInStorage = [];  
-      }}
-       }
-}})};
-      addToCart(cart);
-      console.log(cart)
-      
-
+    }
+    updateCart();
+    saveCart(cartInStorage);
+    console.log(cartInStorage);
+  });
+}
+addToCart();
 //window.location.href = "./cart.html";
+
+function saveCart(cartInStorage) {
+localStorage.setItem("cartInStorage", JSON.stringify(cartInStorage));
+//console.log(localStorage);
+}
+//récupérer les produits du LS
+//let newArray = [];
+function getFromLS () {
+  let cart = localStorage.getItem("cartInStorage");
+  if (cart == null) {
+    return [];
+  } else {
+    return JSON.parse(cart);
+  }
+}
+//console.log(getFromLS());
+
+const updateCart = () => {
+  let cart = getFromLS();
+  let foundKanap = cart;
+  cart.forEach(() => {
+  foundKanap = cart.find(p => p.productId == paramId && p.productColor == colorChoice);
+  console.log(paramId)
+  });
+  { if (cart[foundKanap] != null) {
+    cart[foundKanap].quantityChoice;
+    if (cart[foundKanap].quantity <= 100) {
+        cart[foundKanap].quantity = cart[foundKanap].quantity + quantityChoice;
+    }
+} else {
+    cart.push({ quantity: quantityChoice, color: colorChoice, id: paramId });
+}
+}};
+saveCart(cartInStorage);
+console.log("Envoyé");
+
+
+
 
