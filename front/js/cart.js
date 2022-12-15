@@ -1,61 +1,42 @@
 
-let newCartStorage = localStorage.getItem("newCart");
-//console.log(newCartStorage)
-let product = JSON.parse(newCartStorage);
-//console.log(product);
-
-//tester si le panier est vide 
-if (product === null){
-alert: "Votre panier est vide !"
-};
-    
-//récupérer l'index des produits du LS
-const key = {}
-for (let i = 0; i < localStorage.length; i++) {
-    let productValue = localStorage.getItem(localStorage.key(i)) || "";
-    //let newKey = JSON.parse(productValue);
-    console.log(productValue);
-    //console.log(`Item at ${i}: ${productValue}`);
-}
-
-//on met à jour le nouvel array
-function update(newProduct) {
-    if (newCartStorage.length === O) {
-        localStorage.removeItem("newCart");
-    }else {
-        localStorage.setItem("newCart", JSON.stringify(product));
-    }
-    console.log(newProduct);
-}
-
-
+//récupérer les produits du LS
+let cart= JSON.parse(localStorage.getItem("cartInStorage"));
+console.log(cart);
 
 //requêter l'API pour récupérer les images et le prix du produit
+function fetchProducts() {
+    cart.forEach((cartInStorage) => {
+        console.log(cart)
+    fetch(`http://localhost:3000/api/products/`)
+    .then((res) => res.json())
+    .then((article) => {
+        return article;
+        });
+    })};
+fetchProducts();
+
 const displayProductsInLS = () => {
-    if (product !== null) {
-        //console.log(newCartStorage)
-        for (let i = 0; i < product.length; i++) {
-        fetch(`http://localhost:3000/api/products/`)
-        .then((res) => res.json())
-        .then((product) => {
-        console.log(product);
-                //insertion de la balise article
-                const parent = document.querySelector("#cart__items");
-                const article = document.createElement("article");
-                article.classList.add("#cart__items");
-                parent.appendChild(article);
-                //article.setAttribute("data-id",`{key}`);
-                console.log(article);
-                //insertion de la div qui accueillera les images
-                const divImg = document.createElement("div");
-                parent.appendChild(divImg);
-                divImg.className = (".cart__item__img");
-                //insertion des images
-                let img = document.createElement("img");
+    if (cart >= 0 && cart != null) {
+        console.log(cart)
+        for (let cartInStorage in cart) {
+            console.log("hello")
+                    }
+    }
+} 
+
+            //insertion de la balise article 
+            const parent = document.getElementById("cart__items");
+            const divArticle = document.createElement("article");
+            divArticle.classList.add("cart__items");
+            parent.appendChild(divArticle);
+            console.log(divArticle)
+
+      //insertion des images
+                const divImg = document.createElement("img");
                 document.querySelector(".cart__item__img");
-                img.src = `${product.imageUrl}`;
-                img.alt = `${product.altTxt}`;
-                divImg.appendChild(img);
+                divImg.src = `${cart.imageUrl}`;
+                divImg.alt = `${cart.altTxt}`;
+                parent.appendChild(divImg);
                 //console.log(img)
                 
                 //insertion de la quantité et des couleurs
@@ -73,26 +54,35 @@ const displayProductsInLS = () => {
                 description.classList.add("cart__item__content__description");
 
                 let h2 = document.createElement("h2");
-                article.appendChild(h2);
+                divArticle.appendChild(h2);
                 h2.classList.add("cart__item__content__description");
-                h2.textContent = product.description;
+                h2.textContent = cart.description;
 
                 const colors = document.createElement("p");
-                //color.textContent = `${product.color}`
+                colors.textContent = `${cart.color}`;
                 const price = document.createElement("p");
-                price.textContent = `${key.price}`;
+                price.textContent = `${cart.price}`;
 
                 content.appendChild(description);
                 description.appendChild(h2);
                 //description.appendChild(color);
-                description.appendChild(price);    
-                       })
-                .catch((error) => {
-                    window.alert("Une erreur est survenue !");
-                })
-        };
-        
-    }}
+                description.appendChild(price);   
+
+
+
+//displayProductsInLS();
+
+/*() => {
+        let item = localStorage.getItem(localStorage.key);
+        for (let i=0; i < localStorage.length; i++) {
+        const itemObject = JSON.parse(item);
+        cart.push(itemObject);
+        console.log(itemObject)
+       
+    }
+}*/
+  
+        /*
 //pouvoir retirer un produit du panier
 function removeFromCart(product_id) {
     let cart = getCart();
@@ -137,7 +127,7 @@ function getNumberProduct() {
     return number;
 }
 
-displayProductsInLS();
+displayProductsInLS();/*
 
 /*---------------------formulaire-------------------------------------*/
 /*let getForm = document.querySelector("cart__order__form__question");
