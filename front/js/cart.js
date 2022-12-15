@@ -1,86 +1,101 @@
 
 //récupérer les produits du LS
-let cart= JSON.parse(localStorage.getItem("cartInStorage"));
-console.log(cart);
+let items = JSON.parse(localStorage.getItem("cartInStorage"));
+console.log(items) //array
+
+const getKey = () => {
+        let itemKey = localStorage.getItem(localStorage.key);
+        for (let i=0; i < localStorage.length; i++) {
+        const itemObject = JSON.parse(itemKey);
+        cart.push(itemObject);
+        console.log(itemObject)
+    }
+}
 
 //requêter l'API pour récupérer les images et le prix du produit
 function fetchProducts() {
-    cart.forEach((cartInStorage) => {
-        console.log(cart)
-    fetch(`http://localhost:3000/api/products/`)
+    items.forEach((item) => {
+    //array : console.log(items)
+    fetch(`http://localhost:3000/api/products/{item.productId}`)
     .then((res) => res.json())
-    .then((article) => {
-        return article;
+    .then((product) => {
+        console.log(product)
+        //displayProductsInLS)();
+        return items;
         });
     })};
 fetchProducts();
 
+  let productChoice = {
+        colors: items.color,
+        quantity: items.quantity,
+        productId: items.id
+      }; 
+      console.log(productChoice)
+
 const displayProductsInLS = () => {
-    if (cart >= 0 && cart != null) {
-        console.log(cart)
-        for (let cartInStorage in cart) {
-            console.log("hello")
-                    }
-    }
-} 
-
-            //insertion de la balise article 
-            const parent = document.getElementById("cart__items");
+    for (let item of items) {
+    //insertion de la balise article 
+            const articleFromCart =  document.getElementById("#cart__items");
             const divArticle = document.createElement("article");
-            divArticle.classList.add("cart__items");
-            parent.appendChild(divArticle);
+            divArticle.setAttribute("class", "cart__item");
+            divArticle.setAttribute("data-id",`&{items.id}`)
+            divArticle.setAttribute("data-color",`&{items.color}`)
+            articleFromCart.appendChild(divArticle);
             console.log(divArticle)
+   
+    //insertion des images
+            const divImg = document.createElement("div");
+            divImg.setAttribute("class", ".cart__item__img");
+            const img = document.createElement("img");
+            img.setAttribute("src", '&{items.imgUrl}');
+            img.setAttribute("src", '&{items.altTxt}');
+            divArticle.appendChild(divImg);
 
-      //insertion des images
-                const divImg = document.createElement("img");
-                document.querySelector(".cart__item__img");
-                divImg.src = `${cart.imageUrl}`;
-                divImg.alt = `${cart.altTxt}`;
-                parent.appendChild(divImg);
-                //console.log(img)
-                
-                //insertion de la quantité et des couleurs
-                const quantity = document.querySelector(".cart__item__content__settings__quantity", "p")
-                //const quantityChoice = quantity.value;
-                const color = document.querySelector(".cart__item__content__description", "p")
-                //const colorChoice = color.value;
-                //console.log(colorChoice, quantityChoice);
-                //const id = id.value;
+    //insertion du titre et de la description
+            const content = document.createElement("div");
+            content.setAttribute("class", "cart__item__content");
+            divArticle.appendChild(content);
+            const description = document.createElement("div");
+            description.setAttribute("class", "cart__item__content__description");
+            content.appendChild(description);
 
-                //insertion du titre et de la description
-                const content = document.createElement("div");
-                content.classList.add("cart__item__content");
-                const description = document.createElement("div");
-                description.classList.add("cart__item__content__description");
+            let h2 = document.createElement("h2");
+            divArticle.appendChild(h2);
+            h2.classList.add("cart__item__content__description");
+            h2.textContent = items.description;
+            description.appendChild(h2);
 
-                let h2 = document.createElement("h2");
-                divArticle.appendChild(h2);
-                h2.classList.add("cart__item__content__description");
-                h2.textContent = cart.description;
+            const colors = document.createElement("p");
+            colors.setAttribute("class", "color");
+            colors.textContent = `${items.color}`;
+            description.appendChild(colors);
+         
+            const price = document.createElement("p");
+            price.setAttribute("class", "price");
+            price.textContent = `${items.price}`;
+            description.appendChild(price);
 
-                const colors = document.createElement("p");
-                colors.textContent = `${cart.color}`;
-                const price = document.createElement("p");
-                price.textContent = `${cart.price}`;
+            //création div settings pour la quantité
+            const settingsCart = document.createElement("div");
+            settingsCart.setAttribute("class", "cart__item__content__settings");
 
-                content.appendChild(description);
-                description.appendChild(h2);
-                //description.appendChild(color);
-                description.appendChild(price);   
+            const settingsCartQuantity = document.createElement("div");
+            settingsCart.setAttribute("class", "cart__item__content__settings__quantity");
+            settingsCart.appendChild(settingsCartQuantity);
+
+    //insertion de la quantité et des couleurs
+            const quantity = document.querySelector(".cart__item__content__settings__quantity", "p")
+            //const quantityChoice = quantity.value;
+            const color = document.querySelector(".cart__item__content__description", "p")
+            //const colorChoice = color.value;
+            //console.log(colorChoice, quantityChoice);
+            //const id = id.value;       
+ }};
+
+displayProductsInLS();
 
 
-
-//displayProductsInLS();
-
-/*() => {
-        let item = localStorage.getItem(localStorage.key);
-        for (let i=0; i < localStorage.length; i++) {
-        const itemObject = JSON.parse(item);
-        cart.push(itemObject);
-        console.log(itemObject)
-       
-    }
-}*/
   
         /*
 //pouvoir retirer un produit du panier
