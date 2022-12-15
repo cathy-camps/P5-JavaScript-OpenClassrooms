@@ -28,7 +28,6 @@ console.log(paramId)
       choice.value = color;
       select.appendChild(choice);
       }
-      //console.log("success")
       return kanap;
 })
     .catch ((error) => {
@@ -37,18 +36,19 @@ console.log(paramId)
 };
 
 fetchProduct();
-let cartInStorage = [];
-let productChoice = [];
-const productId = `${paramId}`;
+
+let newCart = [];
+let productChoice;
+let cartInStorage = productChoice;
+//const productId = `${paramId}`;
 
 //sélecteur du bouton 'ajouter au panier' + ajouter les produits sélectionnés dans le panier  
-    function addToCart() {
+    const addToCart = () => {
     document.getElementById("addToCart").addEventListener("click", (button) => {
     button.preventDefault(); 
 //initialisation des constantes pour stocker les références du produit, et le choix de l'utilisateur
     const quantityChoice = document.querySelector('#quantity').value;
-    const colorChoice = document.querySelector('#colors').value;
-    
+    const colorChoice = document.querySelector('#colors').value; 
 //message d'alerte si les quantité et les couleurs ne sont pas saisies
   if (colorChoice <= 0 || colorChoice == null) {
   alert ("Merci de choisir une couleur");
@@ -56,7 +56,7 @@ const productId = `${paramId}`;
   else if (quantityChoice < 1 || quantityChoice > 100) {
   alert ("Merci de choisir une quantité entre 1 et 100");
   }
-  else if ((quantityChoice > 0 && quantityChoice <= 100) && (quantityChoice != 0 && colorChoice != "")); 
+  else if ((quantityChoice > 0 && quantityChoice <= 100) && colorChoice != "")
   {
 //on récupère le produit à ajouter dans le panier 
   productChoice = {
@@ -64,78 +64,31 @@ const productId = `${paramId}`;
         productQuantity: Number(quantityChoice),
         productId: paramId,
       }; 
-  //object : console.log(productChoice) 
-      cartInStorage.push(productChoice);
-    }
-    saveCart(cartInStorage);
-  //array : console.log(cartInStorage);
-  });
-}
+       newCart.push(productChoice);
+       console.log(newCart);
+       saveCart(newCart);
+    }});
+};
 addToCart();
-//window.location.href = "./cart.html";
- 
-function saveCart(cartInStorage) {
+
+//mise en place du localStorage
+const saveCart = (cartInStorage) => {
 let cart = JSON.parse(localStorage.getItem("cartInStorage"));
 if(cart == null) {
   localStorage.setItem("cartInStorage", JSON.stringify(cartInStorage))
 }else{
-  cart.forEach((item) => {
-    console.log(item) //objet
+  Array.prototype.forEach((item) => {
     if (
       item.productId == productChoice.productId && item.productColor == productChoice.productColor
     ) {
       item.productQuantity = item.productQuantity + productChoice.productQuantity;
-      item.productQuantity++;
     } else {
-      cartInStorage.push(item);
+      //mise à jour du localStorage
+      newCart = cart.push(cartInStorage);
       localStorage.setItem("cartInStorage", JSON.stringify(cartInStorage));
-    }
-  });
+    }});
 }};
 
-/*
-//création d'un objet JSON, le convertir en string and stores the string as "cartInStorage"
-function saveCart(cartInStorage) { 
-let cart = JSON.stringify(cartInStorage);
-localStorage.setItem("cartInStorage", JSON.stringify(cartInStorage));
+//window.location.href = "./cart.html";
 
-//récupères le string et la convertit en objet JS
-let retrieveString = localStorage.getItem("cartInStorage");
-const parseObject = JSON.parse(retrieveString);
-
-//modifier l'objet, le convertir en string et remettre le cart existant dans le LS
-parseObject.name = newName;
-const stringifyForStorage = JSON.stringify(parseObject);
-localStorage.setItem("cartInStorage", stringifyForStorage);*/
-
-//récupérer les produits du LS
-//let newArray = [];
-/*function getFromLS () {
-  let cart = localStorage.getItem("cartInStorage");
-  if (cart == null) {
-    return [];
-  } else {
-    return JSON.parse(cart);
-  }
-}
-//console.log(getFromLS());
-
-const updateCart = (foundKanap) => {
-  let cart = getFromLS();
-  let foundKanap = cart;
-  cart.forEach(() => {
-  foundKanap = cart.find(p => p.productId == paramId && p.productColor == colorChoice);
-  console.log(paramId)
-  });
-  { if (cart[foundKanap] != null) {
-    cart[foundKanap].quantityChoice;
-    if (cart[foundKanap].quantity <= 100) {
-        cart[foundKanap].quantity = cart[foundKanap].quantity + quantityChoice;
-    }
-} else {
-    cart.push({ quantity: quantityChoice, color: colorChoice, id: paramId });
-}
-}};
-saveCart(cartInStorage);
-console.log("Envoyé");*/
 
