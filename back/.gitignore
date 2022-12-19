@@ -1,2 +1,5 @@
 /node_modules
 .DS_Store
+front/js/test.js
+front/js/test2.js
+front/js/fetch.js

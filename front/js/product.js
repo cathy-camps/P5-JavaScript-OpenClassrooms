@@ -40,7 +40,6 @@ fetchProduct();
 let newCart = [];
 let productChoice;
 let cartInStorage = productChoice;
-//const productId = `${paramId}`;
 
 //sélecteur du bouton 'ajouter au panier' + ajouter les produits sélectionnés dans le panier  
     const addToCart = () => {
@@ -70,6 +69,7 @@ let cartInStorage = productChoice;
     }});
 };
 addToCart();
+window.location.href = "./cart.html";
 
 //mise en place du localStorage
 const saveCart = (cartInStorage) => {
@@ -89,6 +89,6 @@ if(cart == null) {
     }});
 }};
 
-//window.location.href = "./cart.html";
+
 
 
