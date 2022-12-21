@@ -37,10 +37,6 @@ console.log(paramId)
 
 fetchProduct();
 
-let newCart = [];
-let productChoice;
-let cartInStorage = productChoice;
-
 //sélecteur du bouton 'ajouter au panier' + ajouter les produits sélectionnés dans le panier  
     const addToCart = () => {
     document.getElementById("addToCart").addEventListener("click", (button) => {
@@ -63,31 +59,36 @@ let cartInStorage = productChoice;
         productQuantity: Number(quantityChoice),
         productId: paramId,
       }; 
-       newCart.push(productChoice);
-       console.log(productChoice);
-       console.log(newCart);
-       saveCart(newCart);
+       saveCart(productChoice);
     }});
 };
 addToCart();
 //window.location.href = "./cart.html";
 
 //mise en place du localStorage
-const saveCart = (cartInStorage) => {
+const saveCart = (productChoice) => {
 let cart = JSON.parse(localStorage.getItem("cartInStorage"))
-if(cart == null) {
-  localStorage.setItem("cartInStorage", JSON.stringify(cartInStorage))
-}else{
-  Array.prototype.forEach((item) => {
-    if (
-      item.productId == productChoice.productId && item.productColor == productChoice.productColor
-    ) {
-      item.productQuantity = item.productQuantity + productChoice.productQuantity
+let cartToSave = [];
+let productFound = false;
+if(cart != null) {
+  cart.forEach((item) => {
+    if (item.productId == productChoice.productId && item.productColor == productChoice.productColor) {
+      item.productQuantity = item.productQuantity + productChoice.productQuantity;
+      cartToSave.push(item);
+      productFound = true;
     } else {
       //mise à jour du localStorage
-      newCart = cart.push(cartInStorage);
-      localStorage.setItem("cartInStorage", JSON.stringify(cartInStorage));
+      cartToSave.push(item);
     }});
+    if(!productFound) {
+      cartToSave.push(productChoice);
+    }
+}
+localStorage.setItem("cartInStorage", JSON.stringify(cartToSave));
+if(confirm("Votre produit a bien été ajouté au panier ! Voulez-vous continuer vos achats ?")) {
+location.href = "index.html"
+} else {
+location.href = "cart.html"
 }};
 
 
