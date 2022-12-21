@@ -4,7 +4,7 @@ let items = JSON.parse(localStorage.getItem("cartInStorage"));
 console.log(items) //array
 
 //requêter l'API pour récupérer les images et le prix du produit
-function fetchProducts() {
+function fetchProductsApi() {
     items.forEach((item) => {
     fetch(`http://localhost:3000/api/products/${item.productId}`)
     .then((res) => res.json())
@@ -13,16 +13,13 @@ function fetchProducts() {
         globalProduct.color = item.productColor;
         globalProduct.productQuantity = item.productQuantity;
         globalProduct.id = item.productId;
-        console.log(product)
         displayProductsInLS(globalProduct);
         })
     })};
-fetchProducts();
+fetchProductsApi();
 
 const displayProductsInLS = (globalProduct) => {
-    console.log("items product")
     console.log(items);
-    //for (let item of items) {
     //insertion de la balise article 
             const articleFromCart =  document.getElementById("cart__items");
             const divArticle = document.createElement("article");
@@ -56,14 +53,16 @@ const displayProductsInLS = (globalProduct) => {
             h2.textContent = globalProduct.name;
             description.appendChild(h2);
 
+            //insertion de la couleur
             const colors = document.createElement("p");
             colors.classList.add("color");
             colors.textContent = globalProduct.color;
             description.appendChild(colors);
          
+            //insertion du prix
             const price = document.createElement("p");
             price.classList.add("price");
-            price.textContent = globalProduct.price;
+            price.textContent = globalProduct.price + " €";
             description.appendChild(price);
 
             //création div settings pour la quantité
@@ -76,76 +75,111 @@ const displayProductsInLS = (globalProduct) => {
             settingsCart.appendChild(settingsCartQuantity);
 
             const settingsQuantity = document.createElement("p");
-            settingsQuantity.classList.add("quantity");
-            settingsQuantity.textContent = globalProduct.productQuantity;
+            settingsCartQuantity.classList.add("quantity");
+            settingsQuantity.textContent = "Qté : ";
             settingsCartQuantity.appendChild(settingsQuantity);
 
+             //création de l'élément input quantité
+            const inputQuantity = document.createElement("input");
+            let productQty = "";
+            inputQuantity.classList.add("itemQuantity");
+            document.querySelector(`input[type="number"]`);
+            settingsCartQuantity.appendChild(inputQuantity);
+            //console.log(inputQuantity);
+            inputQuantity.type = "number";
+            inputQuantity.name = "itemQuantity";
+            inputQuantity.value = items.productQuantity;
+            inputQuantity.valMax = "100";
+            inputQuantity.valMin = "1";
+
+            inputQuantity.addEventListener("input", (e) => {
+            console.log(e)
+            productQty = (e.target.value);
+            console.log(productQty);
+               })
+            }
+            
+/*
+            //création de l'élément div "supprimer"
             const deleteCart = document.createElement("div");
             deleteCart.classList.add("cart__item__content__settings__delete");
             settingsCart.appendChild(deleteCart);
             const deleteItem = document.createElement("p");
             deleteItem.classList.add("deleteItem");
             deleteItem.textContent = "Supprimer";
-            deleteCart.appendChild(deleteItem);
+            deleteCart.appendChild(deleteItem);      */     
 
 
- };
-        /*
-//pouvoir retirer un produit du panier
+ //Récupérer le total des quantités 
+const displayTotalPriceQuantity = ()  => {
+const productQty = document.querySelectorAll("itemQuantity");
+  const totalQty = productQty.length;
+  let total = 0;
+
+  for (let i=0; i < totalQty; i++) {
+    total += productQty[i].valueASNumber;
+  }
+  const totalQuantity = document.getElementById("totalQuantity");
+  totalQuantity.textContent = total;
+  console.log(total);
+
+  //calculer le prix total
+  let price = 0;
+  for (let i=0; i < totalQty; i++) {
+    price += (productQty[i]).valueASNumber * items[i].globalProduct.price;
+  }
+  const totalPrice = document.getElementById("totalPrice");
+  totalPrice.textContent = price;
+  console.log(price);
+}
+displayTotalPriceQuantity();
+
+//modifier la quantité d'un produit 
+const changeQuantity = () => {
+    let updateQuantity = document.querySelectorAll("itemQuantity");
+    for (let q = 0; q < updateQuantity.length; q++){
+        updateQuantity[q].addEventListener("change", (e) => {
+            e.target.value;
+
+//regarder si le produit est dans le panier 
+let modifQuantity = items[q].productQuantity;
+let modifValue = updateQuantity[q].valueAsNumber;
+    let foundProduct = items.find((el) => el.modifValue != modifQuantity);
+        foundProduct.productQuantity = modifValue;
+        items[q].productQuantity = foundProduct.productQuantity;
+        localStorage.setItem("product", JSON.stringify(items));
+        //rafraichir la page
+        location.reload();
+        });
+    }};
+    changeQuantity();
+
+    /*
+//supprimer un produit du panier
 function removeFromCart(product_id) {
-    let cart = getCart();
     cart = cart.filter(p => p.id != product_id);
     console.log(product_id)
-    saveCart(cart);
 }
 
-//calculer le prix total du panier
-function getTotalPrice() {
-    let cart = getCart();
-    let total = 0;
-    for (let product of cart) {
-        total += product.quantity * product.price;
-    }
-    return total;
-}
- 
-//changer la quantité 
-function changeQuantity(product_id, quantity) {
-    //regarder si le produit est dans le panier    
-    let cart = getCart()
-    let foundProduct = cart.find(p => p_id == product_id);
-    if (foundProduct != undefined) {
-        foundProduct.quantity += quantity;
-        //si la quantité est à 0
-        if (foundProduct.quantity <= 0) {
-            removeFromCart(foundProduct)
-        } else {
-            //enregistrer si le produit n'a pas été supprimé            
-            saveCart(cart);
-        }
-    }
-}
 //calculer le nombre de produits dans le panier
-function getNumberProduct() {
-    let cart = getCart();
+const NumberOfProducts = () => {
     let number = 0;
     for (let product of cart) {
-        number += parseInt(product.quantity);
+        number += parseInt(item.productQuantity);
     }
     return number;
-}
+} */
 
-displayProductsInLS();/*
+/*-----------------------------récupération du formulaire-------------------------------------*/
+const getForm = () => {
+    document.querySelector("cart__order__form");
 
-/*---------------------formulaire-------------------------------------*/
-/*let getForm = document.querySelector("cart__order__form__question");
 //ecouter la modification du prénom
 getForm.firstName.addeventListener('change', function () {
     validFirstName(this);
 });
-
-//écouter la modification du prénom
-let firstNameForm = document.getElementById("#firstName");
+//validation du prénom 
+getForm.firstName = document.getElementById("#firstName");
 const validFirstName = function(inputFirstName) {
     let firstNameRegExp = new RegExp(
     '([A-Z][a-z]*)([\\s\\\'-][A-Z][a-z]*)*', 'g'
@@ -154,11 +188,21 @@ const validFirstName = function(inputFirstName) {
     console.log(testFirstName);
 };
 
+//récupération balise message d'erreur     
+let firstNameErrorMsg = inputFirstName.nextElementSibling;
+//test de l'expression régulière
+  if (testFirstName) {
+    small.innerText = "Champ valide";
+    small.classList.add = ("Success");
+  } else {
+    small.innerText = "Champ non valide";
+  }
+
 //écouter la modification du nom
 getForm.lastName.addeventListener('change', function () {
     validLastName(this);
 });
-let lastNameForm = document.getElementById("#lastName");
+getForm.lastName = document.getElementById("#lastName");
 const validLastName = function (inputLastName) {
     let lastNameRegExp = new RegExp(
         '([A-Z][a-z]*)([\\s\\\'-][A-Z][a-z]*)*', 'g'
@@ -166,17 +210,21 @@ const validLastName = function (inputLastName) {
 };
 let testLastName = lastNameRegExp.test(inputLastName.value);
 console.log(testLastName);
+
 //récupération balise message d'erreur     
-let firstNameErrorMsg = inputFirstName.nextElementSibling;
+let lastNameErrorMsg = inputLastName.nextElementSibling;
 //test de l'expression régulière
-  if (testFirstName) {
-    small.innerText = "Adresse valide";
+  if (testLastName) {
+    small.innerText = "Champ valide";
     small.classList.add = ("Success");
   } else {
-    small.innerText = "Adresse non valide";
+    small.innerText = "Champ non valide";
   }
 
-  //écouter la modification de l'adresse
+//écouter la modification de l'adresse
+getForm.adress.addeventListener('change', function () {
+validAdress(this);
+
 let adressForm = document.getElementById("#adress");
 const validAdress = function (inputAdress) {
     let adressRegExp = new RegExp(
@@ -185,12 +233,21 @@ const validAdress = function (inputAdress) {
 };
 let testAdress = adressRegExp.test(inputAdress.value);
 console.log(testAdress);
-
-getForm.adress.addeventListener('change', function () {
-    validAdress(this);
 });
 
+//récupération balise message d'erreur     
+let adressErrorMsg = inputAdress.nextElementSibling;
+//test de l'expression régulière
+  if (testAdress) {
+    small.innerText = "Adresse valide";
+    small.classList.add = ("Success");
+  } else {
+    small.innerText = "Adresse non valide";
+  }
+
 //écouter la modification de la ville
+getForm.city.addeventListener('change', function () {
+    validCity(this);
 let cityForm = document.getElementById("#city");
 const validCity = function (inputCity) {
     let cityRegExp = new RegExp(
@@ -199,12 +256,20 @@ const validCity = function (inputCity) {
 };
 let testCity = cityRegExp.test(inputCity.value);
 console.log(testCity);
-
-getForm.city.addeventListener('change', function () {
-    validCity(this);
 });
+//récupération balise message d'erreur     
+let cityErrorMsg = inputCity.nextElementSibling;
+//test de l'expression régulière
+  if (testCity) {
+    small.innerText = "Ville valide";
+    small.classList.add = ("Success");
+  } else {
+    small.innerText = "Ville non valide";
+  }
 
 //ecouter la modification de l'email
+getForm.email.addeventListener('change', function () {
+    validEmail(this);
 let emailForm = document.getElementById("#email");
 const validEmail = function (inputEmail) {
     let emailRegExp = new RegExp(
@@ -213,10 +278,16 @@ const validEmail = function (inputEmail) {
 };
 let testEmail= emailRegExp.test(inputEmail.value);
 console.log(testEmail);
-
-getForm.email.addeventListener('change', function () {
-    validEmail(this);
 });
+//récupération balise message d'erreur     
+let emailErrorMsg = inputEmail.nextElementSibling;
+//test de l'expression régulière
+  if (testEmail) {
+    small.innerText = "Email valide";
+    small.classList.add = ("Success");
+  } else {
+    small.innerText = "Email non valide";
+  }
 
 //ecouter le button commander
 document.querySelector(`cart__order__form input[type="submit"]`).addEventListener("click", (e) => {
@@ -228,13 +299,14 @@ e.preventDefault();
         valid &= reportValidity(input);
         if (!valid){
             break;
-        }
-    }
+        }};
+      });
+    };
+/*
 document.querySelector(`cart__order__form input[name="firstName"]`).setCustomValidity/**(message personnalisé);
 if (valid) {
 console.log("le formulaire est ok")
 window.alert ("Formulaire envoyé");
 } else 
-window.alert("Erreur : veuillez vérifier votre saisie");
+window.alert("Erreur : veuillez vérifier votre saisie");*/
 //récupérer le formulaire et l'envoyer au serveur 
-*/

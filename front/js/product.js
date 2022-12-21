@@ -15,7 +15,7 @@ console.log(paramId)
       let descriptionKanap = document.getElementById('description');
       let priceKanap = document.getElementById('price');
 //insertion du texte descriptif des éléments     
-      imgKanap.innerHTML = `<img src= "${kanap.imageUrl}" alt="${kanap.altTxt}">`
+      imgKanap.innerHTML = `<img src= "${kanap.imageUrl}" alt="${kanap.altTxt}">`;
       title.textContent = `${kanap.name}`;
       priceKanap.textContent = `${kanap.price}`;
       descriptionKanap.textContent = `${kanap.description}`;      
@@ -50,10 +50,10 @@ let cartInStorage = productChoice;
     const colorChoice = document.querySelector('#colors').value; 
 //message d'alerte si les quantité et les couleurs ne sont pas saisies
   if (colorChoice <= 0 || colorChoice == null) {
-  alert ("Merci de choisir une couleur");
+  alert ("Merci de choisir une couleur")
   } 
   else if (quantityChoice < 1 || quantityChoice > 100) {
-  alert ("Merci de choisir une quantité entre 1 et 100");
+  alert ("Merci de choisir une quantité entre 1 et 100")
   }
   else if ((quantityChoice > 0 && quantityChoice <= 100) && colorChoice != "")
   {
@@ -64,16 +64,17 @@ let cartInStorage = productChoice;
         productId: paramId,
       }; 
        newCart.push(productChoice);
+       console.log(productChoice);
        console.log(newCart);
        saveCart(newCart);
     }});
 };
 addToCart();
-window.location.href = "./cart.html";
+//window.location.href = "./cart.html";
 
 //mise en place du localStorage
 const saveCart = (cartInStorage) => {
-let cart = JSON.parse(localStorage.getItem("cartInStorage"));
+let cart = JSON.parse(localStorage.getItem("cartInStorage"))
 if(cart == null) {
   localStorage.setItem("cartInStorage", JSON.stringify(cartInStorage))
 }else{
@@ -81,7 +82,7 @@ if(cart == null) {
     if (
       item.productId == productChoice.productId && item.productColor == productChoice.productColor
     ) {
-      item.productQuantity = item.productQuantity + productChoice.productQuantity;
+      item.productQuantity = item.productQuantity + productChoice.productQuantity
     } else {
       //mise à jour du localStorage
       newCart = cart.push(cartInStorage);
