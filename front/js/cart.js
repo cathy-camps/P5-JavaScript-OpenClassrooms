@@ -1,10 +1,18 @@
-
-//récupérer les produits du LS
 let items = JSON.parse(localStorage.getItem("cartInStorage"));
-console.log(items) //array
+//récupérer les produits du LS
+
+const getCart = () => {
+let items = JSON.parse(localStorage.getItem("cartInStorage"));
+console.log(items);
+}
+
+const saveCart = () => {
+localStorage.setItem("cartInStorage", JSON.stringify(items));
+}
 
 //requêter l'API pour récupérer les images et le prix du produit
-function fetchProductsApi() {
+async function fetchProductsApi() {
+  await getCart();
     items.forEach((item) => {
     fetch(`http://localhost:3000/api/products/${item.productId}`)
     .then((res) => res.json())
@@ -96,10 +104,9 @@ const displayProductsInLS = (globalProduct) => {
             console.log(e)
             productQty = (e.target.value);
             console.log(productQty);
+            saveCart();
                })
-            }
-            
-/*
+             
             //création de l'élément div "supprimer"
             const deleteCart = document.createElement("div");
             deleteCart.classList.add("cart__item__content__settings__delete");
@@ -107,12 +114,12 @@ const displayProductsInLS = (globalProduct) => {
             const deleteItem = document.createElement("p");
             deleteItem.classList.add("deleteItem");
             deleteItem.textContent = "Supprimer";
-            deleteCart.appendChild(deleteItem);      */     
-
+            deleteCart.appendChild(deleteItem);   
+              }
 
  //Récupérer le total des quantités 
-const displayTotalPriceQuantity = ()  => {
-const productQty = document.querySelectorAll("itemQuantity");
+  const displayTotalPriceQuantity = ()  => {
+  const productQty = document.querySelectorAll("itemQuantity");
   const totalQty = productQty.length;
   let total = 0;
 
