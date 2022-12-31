@@ -65,6 +65,9 @@ fetchProduct();
 addToCart();
 //window.location.href = "./cart.html";
 
+let cartInStorage = localStorage;
+//console.log(cartInStorage);
+
 //mise en place du localStorage
 const saveCart = (productChoice) => {
 let cart = JSON.parse(localStorage.getItem("cartInStorage"))

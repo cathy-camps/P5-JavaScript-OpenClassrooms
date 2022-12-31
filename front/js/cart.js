@@ -36,7 +36,7 @@ async function fetchProductsApi() {
 fetchProductsApi();
 
 const displayProductsInLS = (globalProduct) => {
-  console.log(items);
+  //console.log(items);
   //insertion de la balise article
   const articleFromCart = document.getElementById("cart__items");
   const divArticle = document.createElement("article");
@@ -44,7 +44,7 @@ const displayProductsInLS = (globalProduct) => {
   divArticle.dataset.id = globalProduct.id;
   divArticle.dataset.color = globalProduct.color;
   articleFromCart.appendChild(divArticle);
-  console.log(divArticle);
+  //console.log(divArticle);
 
   //insertion des images
   const divImg = document.createElement("div");
@@ -175,8 +175,54 @@ const deleteProductFromCart = (globalProduct) => {
   });
 };
 
-/*-----------------------------récupération du formulaire-------------------------------------*/
+/*-----------------------------Formulaire-------------------------------------*/
 
+//sélection du bouton "commander" pour envoyer le formulaire
+const btnSubmit = document.querySelector('#order');
+btnSubmit.addEventListener("click", (e) => {
+  e.preventDefault();
+
+//création d'un objet contenant les données du formulaire
+const dataForm = {
+firstName: document.querySelector('#firstName').value,
+lastName: document.querySelector('#lastName').value,
+address: document.querySelector('#address').value,
+city: document.querySelector('#city').value,
+email: document.querySelector('#email').value,
+}
+console.log(dataForm)
+
+//sauvegarder l'objet "dataForm" dans le localStorage
+localStorage.setItem('dataForm', JSON.stringify(dataForm));
+
+//récupérer l'objet "dataForm" du localStorage et le mettre dans une variable
+let dataStorage = localStorage.getItem('dataForm');
+
+//convertir la chaine de caractères en objet
+const dataStorageObject = JSON.parse(dataStorage);
+
+console.log('dataStorageObject');
+console.log(dataStorageObject);
+
+/*
+//function pour sauvegarder les données des champs du formulaire
+const fields = document.getElementById("cart__order__form");
+text = document.getElementById(('input').value), fields;
+
+for (let i = fields.length; i++;) {
+  field = fields[i];
+
+if (text === fields[i].value) {
+ fields.selected = true;
+  break;
+}
+}*/
+
+//initialisation du formulaire 
+const getForm = () => {
+let form = document.querySelector(".cart__order__form");
+
+//initialisation des const pour les regex
 //explications du patron :
 /* 
 ^          Start of string  
@@ -185,221 +231,116 @@ const deleteProductFromCart = (globalProduct) => {
 (?:   )    Match expresion but don't capture
 \s+        Whitespace, One or more repititions  
 *          Zero or more repititions  
-$          End of string
-*/
+$          End of string*/
 
-//initialisation des const pour les regex
-let regexName = `^[a-zA-Z]+(?:\s+[a-zA-Z]+)*.{2}$`;
-let regexAddress = `^[#.0-9a-zA-Z\s,-]+{5}$`;
-let regexCity = `^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*{3}$`;
-let regexEmail = `/^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/`;
+let regexName = new RegExp(`^[a-zA-Z]+(?:\s+[a-zA-Z]+)*.{3, 20}$`);
+let regexAddress = new RegExp(`^[a-zA-Z0-9\s,.'-]{3,}$`);
+let regexCity = new RegExp(`^[a-zA-Z\s]{3,}$`);
+let regexEmail = new RegExp(`^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$`);
 
-const invalidFirstName = (regexName) => {
+form.firstName.addEventListener('change', function() {
+  let input = this.value;
+  let isValid = validFirstName(input);
+  if(!isValid) {
+  invalidFirstName();
+  }
+});
+
+form.lastName.addEventListener('change', function() {
+  let input = this.value;
+  let isValid = validLastName(input);
+  if(!isValid) {
+  invalidLastName();
+  }
+});
+
+form.address.addEventListener('change', function() {
+  let input = this.value;
+  let isValid = validAddress(input);
+  if(!isValid) {
+  invalidAddress();
+  }
+});
+
+form.city.addEventListener('change', function() {
+  let input = this.value;
+  let isValid = validAddress(input);
+  if(!isValid) {
+  invalidAddress();
+  }
+});
+form.email.addEventListener('change', function() {
+  let input = this.value;
+  let isValid = validEmail(input);
+  if(!isValid) {
+  invalidEmail();
+  }
+});
+
+const invalidFirstName = () => {
   let firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
-  firstNameErrorMsg.textContent = "Merci de renseigner votre prénom";
+  firstNameErrorMsg.textContent = "Votre prénom doit contenir 3 à 20 caractères";
 };
 
-const invalidLastName = (regexName) => {
+const invalidLastName = () => {
   let lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
-  lastNameErrorMsg.textContent = "Merci de renseigner votre nom";
+  lastNameErrorMsg.textContent = "Votre nom doit contenir 3 à 20 caractères";
 };
 
-const invalidAddress = (regexAddress) => {
+const invalidAddress = () => {
   let addressErrorMsg = document.getElementById("addressErrorMsg");
   addressErrorMsg.textContent = "Merci de renseigner votre adresse";
 };
 
-const invalidCity = (regexCity) => {
+const invalidCity = () => {
   let cityErrorMsg = document.getElementById("cityErrorMsg");
   cityErrorMsg.textContent = "Merci de renseigner votre ville";
 };
 
-const invalidEmail = (regexEmail) => {
+const invalidEmail = () => {
   let emailErrorMsg = document.getElementById("emailErrorMsg");
   emailErrorMsg.textContent = "Merci de renseigner votre email";
 };
 
-/*document.getElementById("firstName").addEventListener("input", function(){
-const invalidLastName = (regexName) => {
-  let lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
-  lastNameErrorMsg.textContent = "Merci de renseigner votre nom";
-};
+//récupération des données du formulaire 
+let inputFirstName = document.getElementById('firstName');
+let inputLastName = document.getElementById('lastName');
+let inputAddress = document.getElementById('address');
+let inputCity = document.getElementById('city');
+let inputEmail = document.getElementById('email');
+//console.log(inputFirstName);
+
+//validation du prénom 
+const validFirstName = (inputFirstName) => {
+  return regexName.test(inputFirstName)
 }
-)*/
 
-//récupération du formulaire
-document.querySelector(".cart__order__form").addEventListener("submit", function (e) {
-    //e.preventDefault();
+const validLastName = (inputLastName) => {
+   return regexName.test(inputLastName)
+}
 
-    //validation du champ nom
-    let validFirstName = document.getElementById("firstName");
-    if (!validFirstName.value) {
-      invalidFirstName();
-    }
+const validAddress = (inputAddress) => {
+   return regexAddress.test(inputAddress)
+}
 
-    //validation du champ prénom
-    let validLastName = document.getElementById("lastName");
-    if (!validLastName.value);
-    {
-      invalidLastName();
-    }
+const validCity = (inputCity) => {
+   return regexCity.test(inputCity)
+}
 
-    //validation du champ adresse
-    let validAddress = document.getElementById("address");
-    if (!validAddress.value) {
-      invalidAddress();
-    }
+const validEmail = (inputEmail) => {
+   return regexEmail.test(inputEmail)
+}
+getForm();
 
-    //validation du champ ville
-    let validCity = document.getElementById("city");
-    if (!validCity.value) {
-      invalidCity();
-    }
-
-    //validation du champ email
-    let validEmail = document.getElementById("email");
-    if (!validEmail.value) {
-      invalidEmail();
-    }
-    alert("Formulaire envoyé");
-    console.log("ok");
-  });
+//création de l'objet "produits sélectionnés" à envoyer au serveur
+const sendToServer = {
+  dataForm,
+  dataStorage
+}
+console.log(sendToServer);
+}});
 
 /*
-const validateForm = () => {
-  let firstName = document.forms["form"]["firstName"];
-  let lastName = document.forms["form"]["lastName"];
-  let address = document.forms["form"]["address"];
-  let city = document.forms["form"]["city"];
-  let email = document.forms["form"]["email"];
-
-  if(firstName.value = "") {
-    return firstNameErrorMsg;
-  }
-}
-
-const attributeFocus = (input) => {
-  document.getElementById(firstName).focus(input);
-}
-
-const input = document.querySelector("input");
-const log = document.getElementById("firstName");
-input.addEventListener("input", )
-//ecouter la modification du prénom
-getForm.firstName.addeventListener('change', function () {
-    validFirstName(this);
-});
-//validation du prénom 
-getForm.firstName = document.getElementById("firstName");
-const validFirstName = function(inputFirstName) {
-    let firstNameRegExp = new RegExp(
-    '([A-Z][a-z]*)([\\s\\\'-][A-Z][a-z]*)*', 'g'
-    )
-    let testFirstName = firstNameRegExp.test(inputFirstName.value);
-    console.log(testFirstName);
-};
-
-//récupération balise message d'erreur     
-let firstNameErrorMsg = inputFirstName.nextElementSibling;
-//test de l'expression régulière
-  if (testFirstName) {
-    small.innerText = "Champ valide";
-    small.classList.add = ("Success");
-  } else {
-    small.innerText = "Champ non valide";
-  }
-
-//écouter la modification du nom
-getForm.lastName.addeventListener('change', function () {
-    validLastName(this);
-});
-getForm.lastName = document.getElementById("#lastName");
-const validLastName = function (inputLastName) {
-    let lastNameRegExp = new RegExp(
-        '([A-Z][a-z]*)([\\s\\\'-][A-Z][a-z]*)*', 'g'
-    )
-};
-let testLastName = lastNameRegExp.test(inputLastName.value);
-console.log(testLastName);
-
-//récupération balise message d'erreur     
-let lastNameErrorMsg = inputLastName.nextElementSibling;
-//test de l'expression régulière
-  if (testLastName) {
-    small.innerText = "Champ valide";
-    small.classList.add = ("Success");
-  } else {
-    small.innerText = "Champ non valide";
-  }
-
-//écouter la modification de l'adresse
-getForm.adress.addeventListener('change', function () {
-validAdress(this);
-
-let adressForm = document.getElementById("#adress");
-const validAdress = function (inputAdress) {
-    let adressRegExp = new RegExp(
-        `^((0[1-9])|([1-8][0-9])|(9[0-8])|(2A)|(2B))[0-9]{3}$`
-    )
-};
-let testAdress = adressRegExp.test(inputAdress.value);
-console.log(testAdress);
-});
-
-//récupération balise message d'erreur     
-let adressErrorMsg = inputAdress.nextElementSibling;
-//test de l'expression régulière
-  if (testAdress) {
-    small.innerText = "Adresse valide";
-    small.classList.add = ("Success");
-  } else {
-    small.innerText = "Adresse non valide";
-  }
-
-//écouter la modification de la ville
-getForm.city.addeventListener('change', function () {
-    validCity(this);
-let cityForm = document.getElementById("#city");
-const validCity = function (inputCity) {
-    let cityRegExp = new RegExp(
-        '([A-Z][a-z]*)([\\s\\\'-][A-Z][a-z]*)*', 'g'
-    )
-};
-let testCity = cityRegExp.test(inputCity.value);
-console.log(testCity);
-});
-//récupération balise message d'erreur     
-let cityErrorMsg = inputCity.nextElementSibling;
-//test de l'expression régulière
-  if (testCity) {
-    small.innerText = "Ville valide";
-    small.classList.add = ("Success");
-  } else {
-    small.innerText = "Ville non valide";
-  }
-
-//ecouter la modification de l'email
-getForm.email.addeventListener('change', function () {
-    validEmail(this);
-let emailForm = document.getElementById("#email");
-const validEmail = function (inputEmail) {
-    let emailRegExp = new RegExp(
-        `^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,4})$`
-    )
-};
-let testEmail= emailRegExp.test(inputEmail.value);
-console.log(testEmail);
-});
-//récupération balise message d'erreur     
-let emailErrorMsg = inputEmail.nextElementSibling;
-//test de l'expression régulière
-  if (testEmail) {
-    small.innerText = "Email valide";
-    small.classList.add = ("Success");
-  } else {
-    small.innerText = "Email non valide";
-  }
-
 //ecouter le button commander
 document.querySelector(`cart__order__form input[type="submit"]`).addEventListener("click", (e) => {
 e.preventDefault();
