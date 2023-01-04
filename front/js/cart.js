@@ -17,6 +17,7 @@ async function fetchProductsApi() {
   let globalPrice = 0;
   const articleFromCart = document.getElementById("cart__items");
   articleFromCart.textContent = "";
+  if(items.length >= 0) {
   items.forEach((item) => {
     fetch(`http://localhost:3000/api/products/${item.productId}`)
       .then((res) => res.json())
@@ -29,13 +30,15 @@ async function fetchProductsApi() {
         totalProduct += Number(item.productQuantity);
         globalPrice += Number(item.productQuantity * globalProduct.price);
         displayTotalPriceQuantity(totalProduct, globalPrice);
-        deleteProductFromCart();
-      });
-  });
-}
+      })
+  })
+  }else{
+    displayTotalPriceQuantity(totalProduct, globalPrice);
+  }
+};
 fetchProductsApi();
 
-const displayProductsInLS = (globalProduct) => {
+function displayProductsInLS(globalProduct) {
   //console.log(items);
   //insertion de la balise article
   const articleFromCart = document.getElementById("cart__items");
@@ -44,7 +47,6 @@ const displayProductsInLS = (globalProduct) => {
   divArticle.dataset.id = globalProduct.id;
   divArticle.dataset.color = globalProduct.color;
   articleFromCart.appendChild(divArticle);
-  //console.log(divArticle);
 
   //insertion des images
   const divImg = document.createElement("div");
@@ -118,6 +120,10 @@ const displayProductsInLS = (globalProduct) => {
   deleteItem.classList.add("deleteItem");
   deleteItem.textContent = "Supprimer";
   deleteCart.appendChild(deleteItem);
+
+  deleteCart.addEventListener("click", (e) => {
+    deleteProduct(e.target);
+  });
 };
 
 //Récupérer le total des quantités
@@ -134,231 +140,197 @@ const displayTotalPriceQuantity = (totalProduct, globalPrice) => {
 const changeQuantity = (inputQuantity) => {
   //regarder si le produit est dans le panier
   let newQty = Number(inputQuantity.value);
-  if (newQty < 0 && newQty <= 100) {
-    let articleToModify = input.closest("article");
-    let colorProduct = articleToModify.dataset.id;
+  if (0 < newQty  && newQty <= 100) {
+    let articleToModify = inputQuantity.closest("article");
+    let colorProduct = articleToModify.dataset.color;
+    let idProduct = articleToModify.dataset.id;
     getCart();
     items.forEach((item) => {
-      item.addEventListener("input", (e) => {
-        if (item.productId && item.productColor == colorProduct) {
+        if (item.productId == idProduct && item.productColor == colorProduct) {
           item.productQuantity = newQty;
         }
-        newQty = parseInt(e.target.value);
-        console.log(newQty);
       });
       saveCart();
       fetchProductsApi();
-    });
-  }
-  //else {
-  // alert ("La quantité doit être inférieure à 100");
-};
+    }
+    else{
+      alert("la quantité ne doit pas dépasser 100")
+    }
+  };
 
-const deleteProductFromCart = (globalProduct) => {
-  let deleteButton = document.querySelectorAll(".deleteItem");
-  deleteButton.forEach((button) => {
-    button.addEventListener("click", (e) => {
-      let target = e.target.closest(".cart__item").dataset.id;
-      let color = e.target.closest(".cart__item").dataset.color;
-      let deleteProduct = e.target.closest(".deleteItem");
-      let product = fetchProductsApi(globalProduct);
-      console.log(product);
-      product = product.filter((item) => {
-        console.log(item);
-        return item.id != target || item.color != color;
-      });
-      displayProductsInLS.remove();
-      saveCart(product);
-      getCart();
-      changeQuantity();
-    });
-  });
+const deleteProduct = (btnDelete) => {
+  let articleToDelete = btnDelete.closest("article");
+  let colorProduct = articleToDelete.dataset.color;
+  let idProduct = articleToDelete.dataset.id;
+  getCart();
+  let oldItems = items;
+  items = [];
+  oldItems.forEach((item) => {
+    if (item.productColor != colorProduct && item.productId != idProduct) {
+      items.push(item);
+    }
+  })
+  saveCart();
+  fetchProductsApi();
 };
 
 /*-----------------------------Formulaire-------------------------------------*/
-
 //sélection du bouton "commander" pour envoyer le formulaire
 const btnSubmit = document.querySelector('#order');
 btnSubmit.addEventListener("click", (e) => {
   e.preventDefault();
-
-//création d'un objet contenant les données du formulaire
-const dataForm = {
-firstName: document.querySelector('#firstName').value,
-lastName: document.querySelector('#lastName').value,
-address: document.querySelector('#address').value,
-city: document.querySelector('#city').value,
-email: document.querySelector('#email').value,
-}
-console.log(dataForm)
-
-//sauvegarder l'objet "dataForm" dans le localStorage
-localStorage.setItem('dataForm', JSON.stringify(dataForm));
+  submitForm();
+});
 
 //récupérer l'objet "dataForm" du localStorage et le mettre dans une variable
 let dataStorage = localStorage.getItem('dataForm');
-
 //convertir la chaine de caractères en objet
 const dataStorageObject = JSON.parse(dataStorage);
 
-console.log('dataStorageObject');
-console.log(dataStorageObject);
-
-/*
-//function pour sauvegarder les données des champs du formulaire
-const fields = document.getElementById("cart__order__form");
-text = document.getElementById(('input').value), fields;
-
-for (let i = fields.length; i++;) {
-  field = fields[i];
-
-if (text === fields[i].value) {
- fields.selected = true;
-  break;
-}
-}*/
-
-//initialisation du formulaire 
-const getForm = () => {
-let form = document.querySelector(".cart__order__form");
-
-//initialisation des const pour les regex
-//explications du patron :
-/* 
-^          Start of string  
-[a-zA-Z]   Any character in the class a to z or A to Z  
-+          One or more repititions  
-(?:   )    Match expresion but don't capture
-\s+        Whitespace, One or more repititions  
-*          Zero or more repititions  
-$          End of string*/
-
-let regexName = new RegExp(`^[a-zA-Z]+(?:\s+[a-zA-Z]+)*.{3, 20}$`);
-let regexAddress = new RegExp(`^[a-zA-Z0-9\s,.'-]{3,}$`);
-let regexCity = new RegExp(`^[a-zA-Z\s]{3,}$`);
-let regexEmail = new RegExp(`^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$`);
-
-form.firstName.addEventListener('change', function() {
-  let input = this.value;
-  let isValid = validFirstName(input);
-  if(!isValid) {
-  invalidFirstName();
+//soumettre le formulaire
+const submitForm = () => {
+  if (controlForm()) {
+    const dataForm = {
+      firstName: document.querySelector('#firstName').value.trim(),
+      lastName: document.querySelector('#lastName').value.trim(),
+      address: document.querySelector('#address').value.trim(),
+      city: document.querySelector('#city').value.trim(),
+      email: document.querySelector('#email').value.trim(),
+    }
+    let productsId = [];
+    getCart();
+    for (let kanapId of items) {
+      productsId.push(kanapId.productId);
+    }
+    fetch(`http://localhost:3000/api/products/order`, {
+      method: "POST",
+      body: JSON.stringify({contact:dataForm,products:productsId}),
+      headers: {
+        "Content-type": "application/json",
+      },
+    }).then((res) => {
+      return res.json();
+    }).then((res) => {
+      localStorage.clear();
+      window.location.href = `confirmation.html?orderId=${res.orderId}`
+    }
+    )
+    console.log(dataForm)
+    console.log("ok pour envoi")
   }
-});
+};
 
-form.lastName.addEventListener('change', function() {
-  let input = this.value;
-  let isValid = validLastName(input);
-  if(!isValid) {
-  invalidLastName();
+function controlForm() {
+  let success = true;
+  let failed = false;
+  let regexName = new RegExp(`^[a-zA-Z ]{3,20}$`);
+  let regexAddress = new RegExp(`^[a-zA-Z0-9\s,.'-]{3,}$`);
+  let regexCity = new RegExp(`^[a-zA-Z\s]{3,}$`);
+  let regexEmail = new RegExp(`^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$`);
+  const dataForm = {
+    firstName: document.querySelector('#firstName').value.trim(),
+    lastName: document.querySelector('#lastName').value.trim(),
+    address: document.querySelector('#address').value.trim(),
+    city: document.querySelector('#city').value.trim(),
+    email: document.querySelector('#email').value.trim(),
   }
-});
+  getCart();
+  if(items.length <= 0) {
+    alert("Votre panier est vide");
+    failed;
+  }
+  if (!regexName.test(dataForm.firstName)) {
+    invalidFirstName();
+    failed;
+  } else {
+    validFirstName();
+    success;
+  };
+  if (!regexName.test(dataForm.lastName)) {
+    invalidLastName();
+    failed;
+  } else {
+    validLastName();
+    success;
+  }
+  if (!regexAddress.test(dataForm.address)) {
+    invalidAddress();
+  failed; 
+  } else {
+    validAddress();
+    success;
+  }
+  if (!regexCity.test(dataForm.city)) {
+    invalidCity();
+   failed;
+  } else {
+    validCity();
+    success; 
+  }
+  if (!regexEmail.test(dataForm.email)) {
+    invalidEmail();
+  failed; 
+  } else {
+    validEmail();
+    success;
+  };
+  return success;
+};
 
-form.address.addEventListener('change', function() {
-  let input = this.value;
-  let isValid = validAddress(input);
-  if(!isValid) {
-  invalidAddress();
-  }
-});
-
-form.city.addEventListener('change', function() {
-  let input = this.value;
-  let isValid = validAddress(input);
-  if(!isValid) {
-  invalidAddress();
-  }
-});
-form.email.addEventListener('change', function() {
-  let input = this.value;
-  let isValid = validEmail(input);
-  if(!isValid) {
-  invalidEmail();
-  }
-});
-
+//validation du prénom 
 const invalidFirstName = () => {
   let firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
   firstNameErrorMsg.textContent = "Votre prénom doit contenir 3 à 20 caractères";
 };
 
+const validFirstName = () => {
+  let firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
+  firstNameErrorMsg.textContent = "";
+};
+
+//validation du nom
 const invalidLastName = () => {
   let lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
   lastNameErrorMsg.textContent = "Votre nom doit contenir 3 à 20 caractères";
 };
 
+const validLastName = () => {
+  let lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
+  lastNameErrorMsg.textContent = "";
+};
+
+//validation de l'adresse 
 const invalidAddress = () => {
   let addressErrorMsg = document.getElementById("addressErrorMsg");
   addressErrorMsg.textContent = "Merci de renseigner votre adresse";
 };
 
+const validAddress = () => {
+  let addressErrorMsg = document.getElementById("addressErrorMsg");
+  addressErrorMsg.textContent = "";
+};
+
+//validation de la ville 
 const invalidCity = () => {
   let cityErrorMsg = document.getElementById("cityErrorMsg");
   cityErrorMsg.textContent = "Merci de renseigner votre ville";
 };
 
+const validCity = () => {
+  let cityErrorMsg = document.getElementById("cityErrorMsg");
+  cityErrorMsg.textContent = "";
+};
+
+//validation de l'email 
 const invalidEmail = () => {
   let emailErrorMsg = document.getElementById("emailErrorMsg");
   emailErrorMsg.textContent = "Merci de renseigner votre email";
 };
 
-//récupération des données du formulaire 
-let inputFirstName = document.getElementById('firstName');
-let inputLastName = document.getElementById('lastName');
-let inputAddress = document.getElementById('address');
-let inputCity = document.getElementById('city');
-let inputEmail = document.getElementById('email');
-//console.log(inputFirstName);
+const validEmail = () => {
+  let emailErrorMsg = document.getElementById("emailErrorMsg");
+  emailErrorMsg.textContent = "";
+};
 
-//validation du prénom 
-const validFirstName = (inputFirstName) => {
-  return regexName.test(inputFirstName)
-}
 
-const validLastName = (inputLastName) => {
-   return regexName.test(inputLastName)
-}
 
-const validAddress = (inputAddress) => {
-   return regexAddress.test(inputAddress)
-}
-
-const validCity = (inputCity) => {
-   return regexCity.test(inputCity)
-}
-
-const validEmail = (inputEmail) => {
-   return regexEmail.test(inputEmail)
-}
-getForm();
-
-//création de l'objet "produits sélectionnés" à envoyer au serveur
-const sendToServer = {
-  dataForm,
-  dataStorage
-}
-console.log(sendToServer);
-}});
-
-/*
-//ecouter le button commander
-document.querySelector(`cart__order__form input[type="submit"]`).addEventListener("click", (e) => {
-e.preventDefault();
-//vérifier si un champ est valide sinon renvoyer un message d'erreur
-    let inputs = document.querySelectorAll(`cart__order__form input[name="firstName", name="lastName", name="address", name="email"]`).reportValidity();
-    let valid = true;
-    for (let input of inputs){
-        valid &= reportValidity(input);
-        if (!valid){
-            break;
-        }};
-      });
-  
-/*
-document.querySelector(`cart__order__form input[name="firstName"]`).setCustomValidity/**(message personnalisé);
-if (valid) {
-console.log("le formulaire est ok")
-window.alert ("Formulaire envoyé");
-} else 
-window.alert("Erreur : veuillez vérifier votre saisie");*/
-//récupérer le formulaire et l'envoyer au serveur
