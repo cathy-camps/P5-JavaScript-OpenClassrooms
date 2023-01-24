@@ -89,12 +89,9 @@ if(cart != null) {
     }
 }
 localStorage.setItem("cartInStorage", JSON.stringify(cartToSave));
-if(confirm("Votre produit a bien été ajouté au panier ! Voulez-vous continuer vos achats ?")) {
-location.href = "index.html"
-} else {
-location.href = "cart.html"
-}};
-
+alert("Votre produit a bien été ajouté au panier !") 
+window.location.href = "cart.html"
+};
 
 
 
