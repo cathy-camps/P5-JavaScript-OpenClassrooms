@@ -1,23 +1,26 @@
 let items = [];
 
-//récupérer les produits du LS
+//Récupérer les produits du LS 
 const getCart = () => {
   items = JSON.parse(localStorage.getItem("cartInStorage"));
   console.log(items);
 };
 
+//Sauvegarder les éléments du panier dans le LS
 const saveCart = () => {
   localStorage.setItem("cartInStorage", JSON.stringify(items));
 };
 
-//requêter l'API pour récupérer les images et le prix du produit
+//requêter l'API pour récupérer les infos du produit et les afficher dans le panier de l'utilisateur (total des produits et le prix total) + mettre à jour les infos 
 async function fetchProductsApi() {
   await getCart();
   let totalProduct = 0;
   let globalPrice = 0;
+  //récupérer l'élément HTML qui va contenir les articles du panier
   const articleFromCart = document.getElementById("cart__items");
   articleFromCart.textContent = "";
   if(items.length >= 0) {
+    //itérer sur les éléments du panier
   items.forEach((item) => {
     fetch(`http://localhost:3000/api/products/${item.productId}`)
       .then((res) => res.json())
@@ -38,6 +41,7 @@ async function fetchProductsApi() {
 };
 fetchProductsApi();
 
+//Gérer l'affichage des produits dans le panier : contient les infos récupérées par l'API pour créer les éléments HTML et les insérer dans le DOM
 function displayProductsInLS(globalProduct) {
   //console.log(items);
   //insertion de la balise article
@@ -112,7 +116,7 @@ function displayProductsInLS(globalProduct) {
     changeQuantity(e.target);
   });
 
-  //création de l'élément div "supprimer"
+  //création de l'élément div "supprimer" avec un écouteur d'évènement
   const deleteCart = document.createElement("div");
   deleteCart.classList.add("cart__item__content__settings__delete");
   settingsCart.appendChild(deleteCart);
@@ -131,12 +135,12 @@ const displayTotalPriceQuantity = (totalProduct, globalPrice) => {
   const totalQuantity = document.getElementById("totalQuantity");
   totalQuantity.textContent = totalProduct;
 
-  //calculer le prix total
+//calculer le prix total
   const totalPrice = document.getElementById("totalPrice");
   totalPrice.textContent = globalPrice;
 };
 
-//modifier la quantité d'un produit
+//Modifier la quantité d'un produit
 const changeQuantity = (inputQuantity) => {
   //regarder si le produit est dans le panier
   let newQty = Number(inputQuantity.value);
@@ -158,6 +162,7 @@ const changeQuantity = (inputQuantity) => {
     }
   };
 
+//Supprimer un produit 
 const deleteProduct = (btnDelete) => {
   let articleToDelete = btnDelete.closest("article");
   let colorProduct = articleToDelete.dataset.color;
@@ -220,6 +225,7 @@ const submitForm = () => {
   }
 };
 
+//Contrôler la saisie du formulaire avec la mise en place des regex
 function controlForm() {
   let success = true;
   let failed = false;

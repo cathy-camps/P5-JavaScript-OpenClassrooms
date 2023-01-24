@@ -86,7 +86,7 @@ if(cart != null) {
       cartToSave.push(item);
       productFound = true;
     } else {
-      //mise à jour du panier et du localStorage
+//mise à jour du panier et du localStorage
       cartToSave.push(item);
     }});
     if(!productFound) {
