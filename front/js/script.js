@@ -1,27 +1,27 @@
 //jshint esversion: 8, asi: true
-const items = document.getElementById('items');
+const items = document.getElementById("items");
 
 //requêter l'API avec la méthode 'fetch' pour récupérer la liste des produits. La réponse de l'API est convertie en json. L'objet 'productList' est stocké dans la variable 'products'. Affichage d'un message d'erreur si une erreur se produit lors de la requête.
 async function getProducts() {
   return await fetch(`http://localhost:3000/api/products/`)
     .then((res) => res.json())
     .then((productList) => {
-      let products = productList
+      let products = productList;
       console.log(products);
       return products;
     })
     .catch((error) => {
       window.alert("Une erreur est survenue !");
     });
-  }
+}
 
 //Affichage des produits de l'API, itération sur le tableau 'productList' pour créer les éléments HTML en passant l'id du produit comme paramètre.
-  async function printKanaps() {
+async function printKanaps() {
   await getProducts()
-  .then((products)=> {
-    const productList = products;
-    console.log(typeof(productList));
-      for (const product of productList) { 
+    .then((products) => {
+      const productList = products;
+      console.log(typeof productList);
+      for (const product of productList) {
         //insertion élément "a"
         let link = document.createElement("a");
         document.querySelector("#items").appendChild(link);
@@ -47,13 +47,13 @@ async function getProducts() {
         article.appendChild(p);
         p.classList.add("productDescription");
         p.textContent = product.description;
-  }
-})
+      }
+    })
     .catch((error) => {
       window.alert("Une erreur est survenue !");
     });
-  };
+}
 //affichage de tous les produits
-console.log("hello")
+console.log("hello");
 //appel de la fonction pour afficher les produits sur la page
 printKanaps();

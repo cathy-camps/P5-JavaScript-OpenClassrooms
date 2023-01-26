@@ -1,6 +1,6 @@
 let items = [];
 
-//Récupérer les produits du LS 
+//Récupérer les produits du LS
 const getCart = () => {
   items = JSON.parse(localStorage.getItem("cartInStorage"));
   console.log(items);
@@ -11,38 +11,38 @@ const saveCart = () => {
   localStorage.setItem("cartInStorage", JSON.stringify(items));
 };
 
-//requêter l'API pour récupérer les infos du produit et les afficher dans le panier de l'utilisateur (total des produits et le prix total) + mettre à jour les infos 
+//requêter l'API pour récupérer les infos du produit et les afficher dans le panier de l'utilisateur (total des produits et le prix total) + mettre à jour les infos
 async function fetchProductsApi() {
   await getCart();
   let totalProduct = 0;
   let globalPrice = 0;
-//récupérer l'élément HTML qui va contenir les articles du panier
+  //récupérer l'élément HTML qui va contenir les articles du panier
   const articleFromCart = document.getElementById("cart__items");
   articleFromCart.textContent = "";
-  if(items.length >= 0) {
-//itérer sur les éléments du panier
-  items.forEach((item) => {
-    fetch(`http://localhost:3000/api/products/${item.productId}`)
-      .then((res) => res.json())
-      .then((product) => {
-        let globalProduct = product;
-        globalProduct.color = item.productColor;
-        globalProduct.productQuantity = item.productQuantity;
-        globalProduct.id = item.productId;
-        displayProductsInLS(globalProduct);
-        totalProduct += Number(item.productQuantity);
-        globalPrice += Number(item.productQuantity * globalProduct.price);
-        displayTotalPriceQuantity(totalProduct, globalPrice);
-      })
-  })
-  }else{
+  if (items.length >= 0) {
+    //itérer sur les éléments du panier
+    items.forEach((item) => {
+      fetch(`http://localhost:3000/api/products/${item.productId}`)
+        .then((res) => res.json())
+        .then((product) => {
+          let globalProduct = product;
+          globalProduct.color = item.productColor;
+          globalProduct.productQuantity = item.productQuantity;
+          globalProduct.id = item.productId;
+          displayProductsInLS(globalProduct);
+          totalProduct += Number(item.productQuantity <= 100);
+          globalPrice += Number(item.productQuantity * globalProduct.price);
+          displayTotalPriceQuantity(totalProduct, globalPrice);
+        });
+    });
+  } else {
     displayTotalPriceQuantity(totalProduct, globalPrice);
   }
-};
+}
 fetchProductsApi();
 
 //Gérer l'affichage des produits dans le panier : contient les infos récupérées par l'API pour créer les éléments HTML et les insérer dans le DOM
-  function displayProductsInLS(globalProduct) {
+function displayProductsInLS(globalProduct) {
   //insertion de la balise article
   const articleFromCart = document.getElementById("cart__items");
   const divArticle = document.createElement("article");
@@ -64,9 +64,9 @@ fetchProductsApi();
   const content = document.createElement("div");
   content.classList.add("cart__item__content");
   divArticle.appendChild(content);
+
   const description = document.createElement("div");
   description.classList.add("cart__item__content__description");
-  description.textContent = globalProduct.description;
   content.appendChild(description);
 
   let h2 = document.createElement("h2");
@@ -127,14 +127,14 @@ fetchProductsApi();
   deleteCart.addEventListener("click", (e) => {
     deleteProduct(e.target);
   });
-};
+}
 
 //Récupérer le total des quantités
 const displayTotalPriceQuantity = (totalProduct, globalPrice) => {
   const totalQuantity = document.getElementById("totalQuantity");
   totalQuantity.textContent = totalProduct;
 
-//calculer le prix total
+  //calculer le prix total
   const totalPrice = document.getElementById("totalPrice");
   totalPrice.textContent = globalPrice;
 };
@@ -143,25 +143,27 @@ const displayTotalPriceQuantity = (totalProduct, globalPrice) => {
 const changeQuantity = (inputQuantity) => {
   //regarder si le produit est dans le panier
   let newQty = Number(inputQuantity.value);
-  if (0 < newQty  && newQty <= 100) {
+  if (newQty >= 0 && newQty <= 100) {
+  } else if (inputQuantity.value + newQty <= 100) {
+    //if (0 < newQty  && newQty <= 100) {
     let articleToModify = inputQuantity.closest("article");
     let colorProduct = articleToModify.dataset.color;
     let idProduct = articleToModify.dataset.id;
     getCart();
     items.forEach((item) => {
-        if (item.productId == idProduct && item.productColor == colorProduct) {
-          item.productQuantity = newQty;
-        }
-      });
-      saveCart();
-      fetchProductsApi();
-    }
-    else{
-      alert("la quantité ne doit pas dépasser 100")
-    }
-  };
+      if (item.productId == idProduct && item.productColor == colorProduct) {
+        item.productQuantity = newQty;
+      }
+    });
+    saveCart();
+    fetchProductsApi();
+    location.reload();
+  } else {
+    alert("la quantité ne doit pas dépasser 100");
+  }
+};
 
-//Supprimer un produit 
+//Supprimer un produit
 const deleteProduct = (btnDelete) => {
   let articleToDelete = btnDelete.closest("article");
   let colorProduct = articleToDelete.dataset.color;
@@ -173,34 +175,34 @@ const deleteProduct = (btnDelete) => {
     if (item.productColor != colorProduct && item.productId != idProduct) {
       items.push(item);
     }
-  })
+  });
   saveCart();
   fetchProductsApi();
 };
 
 /*-----------------------------Formulaire-------------------------------------*/
 //sélection du bouton "commander" pour envoyer le formulaire
-const btnSubmit = document.querySelector('#order');
+const btnSubmit = document.querySelector("#order");
 btnSubmit.addEventListener("click", (e) => {
   e.preventDefault();
   submitForm();
 });
 
 //récupérer l'objet "dataForm" du localStorage et le mettre dans une variable
-let dataStorage = localStorage.getItem('dataForm');
+let dataStorage = localStorage.getItem("dataForm");
 //convertir la chaine de caractères en objet
 const dataStorageObject = JSON.parse(dataStorage);
 
-//Envoyer les données du formulaire après controle de la validité des données saisies 
+//Envoyer les données du formulaire après controle de la validité des données saisies
 const submitForm = () => {
   if (controlForm()) {
     const dataForm = {
-      firstName: document.querySelector('#firstName').value.trim(),
-      lastName: document.querySelector('#lastName').value.trim(),
-      address: document.querySelector('#address').value.trim(),
-      city: document.querySelector('#city').value.trim(),
-      email: document.querySelector('#email').value.trim(),
-    }
+      firstName: document.querySelector("#firstName").value.trim(),
+      lastName: document.querySelector("#lastName").value.trim(),
+      address: document.querySelector("#address").value.trim(),
+      city: document.querySelector("#city").value.trim(),
+      email: document.querySelector("#email").value.trim(),
+    };
     let productsId = [];
     getCart();
     for (let kanapId of items) {
@@ -208,17 +210,18 @@ const submitForm = () => {
     }
     fetch(`http://localhost:3000/api/products/order`, {
       method: "POST",
-      body: JSON.stringify({contact:dataForm,products:productsId}),
+      body: JSON.stringify({ contact: dataForm, products: productsId }),
       headers: {
         "Content-type": "application/json",
       },
-    }).then((res) => {
-      return res.json();
-    }).then((res) => {
-      localStorage.clear();
-      window.location.href = `confirmation.html?orderId=${res.orderId}`
-    }
-    )
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((res) => {
+        localStorage.clear();
+        window.location.href = `confirmation.html?orderId=${res.orderId}`;
+      });
     //console.log(dataForm)
     //console.log("ok pour envoi")
   }
@@ -231,16 +234,18 @@ function controlForm() {
   let regexName = new RegExp(`^[a-zA-Z ]{2,20}$`);
   let regexAddress = new RegExp(`^[a-zA-Z0-9\s,.'-]{3,}$`);
   let regexCity = new RegExp(`^[a-zA-Z\s]{3,}$`);
-  let regexEmail = new RegExp(`^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$`);
+  let regexEmail = new RegExp(
+    `^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$`
+  );
   const dataForm = {
-    firstName: document.querySelector('#firstName').value.trim(),
-    lastName: document.querySelector('#lastName').value.trim(),
-    address: document.querySelector('#address').value.trim(),
-    city: document.querySelector('#city').value.trim(),
-    email: document.querySelector('#email').value.trim(),
-  }
+    firstName: document.querySelector("#firstName").value.trim(),
+    lastName: document.querySelector("#lastName").value.trim(),
+    address: document.querySelector("#address").value.trim(),
+    city: document.querySelector("#city").value.trim(),
+    email: document.querySelector("#email").value.trim(),
+  };
   getCart();
-  if(items.length <= 0) {
+  if (items.length <= 0) {
     alert("Votre panier est vide");
     failed;
   }
@@ -250,7 +255,7 @@ function controlForm() {
   } else {
     validFirstName();
     success;
-  };
+  }
   if (!regexName.test(dataForm.lastName)) {
     invalidLastName();
     failed;
@@ -260,32 +265,33 @@ function controlForm() {
   }
   if (!regexAddress.test(dataForm.address)) {
     invalidAddress();
-  failed; 
+    failed;
   } else {
     validAddress();
     success;
   }
   if (!regexCity.test(dataForm.city)) {
     invalidCity();
-   failed;
+    failed;
   } else {
     validCity();
-    success; 
+    success;
   }
   if (!regexEmail.test(dataForm.email)) {
     invalidEmail();
-  failed; 
+    failed;
   } else {
     validEmail();
     success;
-  };
+  }
   return success;
-};
+}
 
-//validation du prénom 
+//validation du prénom
 const invalidFirstName = () => {
   let firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
-  firstNameErrorMsg.textContent = "Votre prénom doit contenir 2 à 20 caractères et pas de chiffre";
+  firstNameErrorMsg.textContent =
+    "Votre prénom doit contenir 2 à 20 caractères et pas de chiffre";
 };
 
 const validFirstName = () => {
@@ -296,7 +302,8 @@ const validFirstName = () => {
 //validation du nom
 const invalidLastName = () => {
   let lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
-  lastNameErrorMsg.textContent = "Votre nom doit contenir 2 à 20 caractères et pas de chiffre";
+  lastNameErrorMsg.textContent =
+    "Votre nom doit contenir 2 à 20 caractères et pas de chiffre";
 };
 
 const validLastName = () => {
@@ -304,7 +311,7 @@ const validLastName = () => {
   lastNameErrorMsg.textContent = "";
 };
 
-//validation de l'adresse 
+//validation de l'adresse
 const invalidAddress = () => {
   let addressErrorMsg = document.getElementById("addressErrorMsg");
   addressErrorMsg.textContent = "Merci de renseigner votre adresse";
@@ -315,7 +322,7 @@ const validAddress = () => {
   addressErrorMsg.textContent = "";
 };
 
-//validation de la ville 
+//validation de la ville
 const invalidCity = () => {
   let cityErrorMsg = document.getElementById("cityErrorMsg");
   cityErrorMsg.textContent = "Merci de renseigner votre ville";
@@ -326,7 +333,7 @@ const validCity = () => {
   cityErrorMsg.textContent = "";
 };
 
-//validation de l'email 
+//validation de l'email
 const invalidEmail = () => {
   let emailErrorMsg = document.getElementById("emailErrorMsg");
   emailErrorMsg.textContent = "Merci de renseigner votre email";
@@ -338,5 +345,3 @@ const validEmail = () => {
 };
 
 controlForm();
-
-
