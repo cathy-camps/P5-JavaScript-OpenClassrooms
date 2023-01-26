@@ -70,7 +70,7 @@ const addToCart = () => {
 };
 addToCart();
 
-let cartInStorage = addToCart();
+//let cartInStorage = addToCart();
 //console.log(cartInStorage);
 
 //mise en place du localStorage
@@ -78,7 +78,7 @@ const saveCart = (productChoice) => {
   //écupère les articles du panier du stockage local et crée un tableau vide
   let cart = JSON.parse(localStorage.getItem("cartInStorage"));
   let cartToSave = [];
-  let productFound = false;
+  let productFound = false; let saveCart = true;
   //vérifier si le panier est vide en parcourant les articles du panier et en vérifiant si l'article courant a le même id et la même couleur. Si oui, met à jour la quantité et ajoute l'article au tableau
   if (cart != null) {
     cart.forEach((item) => {
@@ -86,22 +86,32 @@ const saveCart = (productChoice) => {
         item.productId == productChoice.productId &&
         item.productColor == productChoice.productColor
       ) {
-        item.productQuantity =
-          item.productQuantity + productChoice.productQuantity;
-        // if (item.productQuantity + productChoice.productQuantity <= 100)
-        cartToSave.push(item);
-        productFound = true;
+        item.productQuantity = item.productQuantity + productChoice.productQuantity;
+        if (item.productQuantity > 100) {
+          alert("la quantite doit etre inférieure à 100 !");
+          saveCart = false;
+        } else {
+          cartToSave.push(item);
+          productFound = true;
+        }
       } else {
         //mise à jour du panier et du localStorage
         cartToSave.push(item);
       }
     });
-    if (!productFound) {
-      cartToSave.push(productChoice);
+  }
+
+  if (!productFound) {
+    cartToSave.push(productChoice);
+  }
+
+  if (saveCart) {
+    //affiche un message d'alerte et redirige vers la page panier
+    localStorage.setItem("cartInStorage", JSON.stringify(cartToSave));
+    if (confirm("Votre produit a été ajouté au panier. Voulez-vous ajouter autre article ?")) {
+      window.location.href = "index.html";
+    } else {
+      window.location.href = "cart.html";
     }
   }
-  //affiche un message d'alerte et redirige vers la page panier
-  localStorage.setItem("cartInStorage", JSON.stringify(cartToSave));
-  alert("Votre produit a bien été ajouté au panier !");
-  window.location.href = "cart.html";
 };
