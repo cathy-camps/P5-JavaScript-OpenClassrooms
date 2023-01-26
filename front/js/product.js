@@ -78,7 +78,8 @@ const saveCart = (productChoice) => {
   //écupère les articles du panier du stockage local et crée un tableau vide
   let cart = JSON.parse(localStorage.getItem("cartInStorage"));
   let cartToSave = [];
-  let productFound = false; let saveCart = true;
+  let productFound = false;
+  let saveCart = true;
   //vérifier si le panier est vide en parcourant les articles du panier et en vérifiant si l'article courant a le même id et la même couleur. Si oui, met à jour la quantité et ajoute l'article au tableau
   if (cart != null) {
     cart.forEach((item) => {
@@ -86,7 +87,8 @@ const saveCart = (productChoice) => {
         item.productId == productChoice.productId &&
         item.productColor == productChoice.productColor
       ) {
-        item.productQuantity = item.productQuantity + productChoice.productQuantity;
+        item.productQuantity =
+          item.productQuantity + productChoice.productQuantity;
         if (item.productQuantity > 100) {
           alert("la quantite doit etre inférieure à 100 !");
           saveCart = false;
@@ -108,7 +110,11 @@ const saveCart = (productChoice) => {
   if (saveCart) {
     //affiche un message d'alerte et redirige vers la page panier
     localStorage.setItem("cartInStorage", JSON.stringify(cartToSave));
-    if (confirm("Votre produit a été ajouté au panier. Voulez-vous ajouter autre article ?")) {
+    if (
+      confirm(
+        "Votre produit a été ajouté au panier. Voulez-vous continuer vos achats ?"
+      )
+    ) {
       window.location.href = "index.html";
     } else {
       window.location.href = "cart.html";

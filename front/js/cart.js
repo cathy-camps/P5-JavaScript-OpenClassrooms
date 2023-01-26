@@ -12,13 +12,13 @@ const saveCart = () => {
 };
 
 //requêter l'API pour récupérer les infos du produit et les afficher dans le panier de l'utilisateur (total des produits et le prix total) + mettre à jour les infos
-async function fetchProductsApi() {
+async function fetchProductsApi(display) {
   await getCart();
   let totalProduct = 0;
   let globalPrice = 0;
   //récupérer l'élément HTML qui va contenir les articles du panier
   const articleFromCart = document.getElementById("cart__items");
-  articleFromCart.textContent = "";
+  if (display) articleFromCart.textContent = "";
   if (items.length > 0) {
     //itérer sur les éléments du panier
     items.forEach((item) => {
@@ -29,7 +29,7 @@ async function fetchProductsApi() {
           globalProduct.color = item.productColor;
           globalProduct.productQuantity = item.productQuantity;
           globalProduct.id = item.productId;
-          displayProductsInLS(globalProduct);
+          if (display) displayProductsInLS(globalProduct);
           totalProduct += Number(item.productQuantity);
           globalPrice += Number(item.productQuantity * globalProduct.price);
           displayTotalPriceQuantity(totalProduct, globalPrice);
@@ -60,7 +60,7 @@ function displayProductsInLS(globalProduct) {
   divImg.appendChild(img);
   divArticle.appendChild(divImg);
 
-  //insertion du titre 
+  //insertion du titre et de la description
   const content = document.createElement("div");
   content.classList.add("cart__item__content");
   divArticle.appendChild(content);
@@ -134,7 +134,7 @@ const displayTotalPriceQuantity = (totalProduct, globalPrice) => {
   const totalQuantity = document.getElementById("totalQuantity");
   totalQuantity.textContent = totalProduct;
 
-//calculer le prix total
+  //calculer le prix total
   const totalPrice = document.getElementById("totalPrice");
   totalPrice.textContent = globalPrice;
 };
@@ -148,10 +148,10 @@ const changeQuantity = (inputQuantity) => {
     let colorProduct = articleToModify.dataset.color;
     let idProduct = articleToModify.dataset.id;
     getCart();
-    let oldQty = 0;
+    let oldQte = 0;
     items.forEach((item) => {
       if (item.productId == idProduct && item.productColor == colorProduct) {
-        oldQty = item.productQuantity;
+        oldQte = item.productQuantity;
         item.productQuantity = newQty;
       }
     });
@@ -336,4 +336,3 @@ const validEmail = () => {
   let emailErrorMsg = document.getElementById("emailErrorMsg");
   emailErrorMsg.textContent = "";
 };
-
