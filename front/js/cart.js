@@ -16,11 +16,11 @@ async function fetchProductsApi() {
   await getCart();
   let totalProduct = 0;
   let globalPrice = 0;
-  //récupérer l'élément HTML qui va contenir les articles du panier
+//récupérer l'élément HTML qui va contenir les articles du panier
   const articleFromCart = document.getElementById("cart__items");
   articleFromCart.textContent = "";
   if(items.length >= 0) {
-    //itérer sur les éléments du panier
+//itérer sur les éléments du panier
   items.forEach((item) => {
     fetch(`http://localhost:3000/api/products/${item.productId}`)
       .then((res) => res.json())
@@ -42,8 +42,7 @@ async function fetchProductsApi() {
 fetchProductsApi();
 
 //Gérer l'affichage des produits dans le panier : contient les infos récupérées par l'API pour créer les éléments HTML et les insérer dans le DOM
-function displayProductsInLS(globalProduct) {
-  //console.log(items);
+  function displayProductsInLS(globalProduct) {
   //insertion de la balise article
   const articleFromCart = document.getElementById("cart__items");
   const divArticle = document.createElement("article");
@@ -192,7 +191,7 @@ let dataStorage = localStorage.getItem('dataForm');
 //convertir la chaine de caractères en objet
 const dataStorageObject = JSON.parse(dataStorage);
 
-//soumettre le formulaire
+//Envoyer les données du formulaire après controle de la validité des données saisies 
 const submitForm = () => {
   if (controlForm()) {
     const dataForm = {
@@ -220,8 +219,8 @@ const submitForm = () => {
       window.location.href = `confirmation.html?orderId=${res.orderId}`
     }
     )
-    console.log(dataForm)
-    console.log("ok pour envoi")
+    //console.log(dataForm)
+    //console.log("ok pour envoi")
   }
 };
 
@@ -338,5 +337,6 @@ const validEmail = () => {
   emailErrorMsg.textContent = "";
 };
 
+controlForm();
 
 

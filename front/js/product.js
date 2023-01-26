@@ -68,14 +68,13 @@ fetchProduct();
 };
 addToCart();
 
-let cartInStorage = localStorage;
+let cartInStorage = addToCart();
 //console.log(cartInStorage);
 
 //mise en place du localStorage
 const saveCart = (productChoice) => {
 //écupère les articles du panier du stockage local et crée un tableau vide
 let cart = JSON.parse(localStorage.getItem("cartInStorage"))
-console.log(cart);
 let cartToSave = [];
 let productFound = false;
 //vérifier si le panier est vide en parcourant les articles du panier et en vérifiant si l'article courant a le même id et la même couleur. Si oui, met à jour la quantité et ajoute l'article au tableau
