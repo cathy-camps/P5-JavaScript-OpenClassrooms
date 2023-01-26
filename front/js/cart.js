@@ -228,7 +228,7 @@ const submitForm = () => {
 function controlForm() {
   let success = true;
   let failed = false;
-  let regexName = new RegExp(`^[a-zA-Z ]{3,20}$`);
+  let regexName = new RegExp(`^[a-zA-Z ]{2,20}$`);
   let regexAddress = new RegExp(`^[a-zA-Z0-9\s,.'-]{3,}$`);
   let regexCity = new RegExp(`^[a-zA-Z\s]{3,}$`);
   let regexEmail = new RegExp(`^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$`);
@@ -285,7 +285,7 @@ function controlForm() {
 //validation du prénom 
 const invalidFirstName = () => {
   let firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
-  firstNameErrorMsg.textContent = "Votre prénom doit contenir 3 à 20 caractères";
+  firstNameErrorMsg.textContent = "Votre prénom doit contenir 2 à 20 caractères et pas de chiffre";
 };
 
 const validFirstName = () => {
@@ -296,7 +296,7 @@ const validFirstName = () => {
 //validation du nom
 const invalidLastName = () => {
   let lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
-  lastNameErrorMsg.textContent = "Votre nom doit contenir 3 à 20 caractères";
+  lastNameErrorMsg.textContent = "Votre nom doit contenir 2 à 20 caractères et pas de chiffre";
 };
 
 const validLastName = () => {
