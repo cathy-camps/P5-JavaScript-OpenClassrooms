@@ -19,7 +19,7 @@ async function fetchProductsApi() {
   //récupérer l'élément HTML qui va contenir les articles du panier
   const articleFromCart = document.getElementById("cart__items");
   articleFromCart.textContent = "";
-  if (items.length >= 0) {
+  if (items.length > 0) {
     //itérer sur les éléments du panier
     items.forEach((item) => {
       fetch(`http://localhost:3000/api/products/${item.productId}`)
@@ -30,7 +30,7 @@ async function fetchProductsApi() {
           globalProduct.productQuantity = item.productQuantity;
           globalProduct.id = item.productId;
           displayProductsInLS(globalProduct);
-          totalProduct += Number(item.productQuantity <= 100);
+          totalProduct += Number(item.productQuantity);
           globalPrice += Number(item.productQuantity * globalProduct.price);
           displayTotalPriceQuantity(totalProduct, globalPrice);
         });
@@ -39,7 +39,7 @@ async function fetchProductsApi() {
     displayTotalPriceQuantity(totalProduct, globalPrice);
   }
 }
-fetchProductsApi();
+fetchProductsApi(true);
 
 //Gérer l'affichage des produits dans le panier : contient les infos récupérées par l'API pour créer les éléments HTML et les insérer dans le DOM
 function displayProductsInLS(globalProduct) {
@@ -60,7 +60,7 @@ function displayProductsInLS(globalProduct) {
   divImg.appendChild(img);
   divArticle.appendChild(divImg);
 
-  //insertion du titre et de la description
+  //insertion du titre 
   const content = document.createElement("div");
   content.classList.add("cart__item__content");
   divArticle.appendChild(content);
@@ -134,7 +134,7 @@ const displayTotalPriceQuantity = (totalProduct, globalPrice) => {
   const totalQuantity = document.getElementById("totalQuantity");
   totalQuantity.textContent = totalProduct;
 
-  //calculer le prix total
+//calculer le prix total
   const totalPrice = document.getElementById("totalPrice");
   totalPrice.textContent = globalPrice;
 };
@@ -143,21 +143,20 @@ const displayTotalPriceQuantity = (totalProduct, globalPrice) => {
 const changeQuantity = (inputQuantity) => {
   //regarder si le produit est dans le panier
   let newQty = Number(inputQuantity.value);
-  if (newQty >= 0 && newQty <= 100) {
-  } else if (inputQuantity.value + newQty <= 100) {
-    //if (0 < newQty  && newQty <= 100) {
+  if (newQty > 0 && newQty <= 100) {
     let articleToModify = inputQuantity.closest("article");
     let colorProduct = articleToModify.dataset.color;
     let idProduct = articleToModify.dataset.id;
     getCart();
+    let oldQty = 0;
     items.forEach((item) => {
       if (item.productId == idProduct && item.productColor == colorProduct) {
+        oldQty = item.productQuantity;
         item.productQuantity = newQty;
       }
     });
     saveCart();
-    fetchProductsApi();
-    location.reload();
+    fetchProductsApi(false);
   } else {
     alert("la quantité ne doit pas dépasser 100");
   }
@@ -176,8 +175,9 @@ const deleteProduct = (btnDelete) => {
       items.push(item);
     }
   });
+  articleToDelete.remove();
   saveCart();
-  fetchProductsApi();
+  fetchProductsApi(false);
 };
 
 /*-----------------------------Formulaire-------------------------------------*/
@@ -222,8 +222,6 @@ const submitForm = () => {
         localStorage.clear();
         window.location.href = `confirmation.html?orderId=${res.orderId}`;
       });
-    //console.log(dataForm)
-    //console.log("ok pour envoi")
   }
 };
 
@@ -231,9 +229,9 @@ const submitForm = () => {
 function controlForm() {
   let success = true;
   let failed = false;
-  let regexName = new RegExp(`^[a-zA-Z ]{2,20}$`);
-  let regexAddress = new RegExp(`^[a-zA-Z0-9\s,.'-]{3,}$`);
-  let regexCity = new RegExp(`^[a-zA-Z\s]{3,}$`);
+  let regexName = new RegExp(`^[a-zA-ZàèéêëçÈÉÊËÇ ,.'-]{2,}$`);
+  let regexAddress = new RegExp(`^[0-9]+[a-zA-Z0-9 .,-]{1,}[a-zA-Z ]+$`);
+  let regexCity = new RegExp(`^[a-zA-Z \s]{2,}$`);
   let regexEmail = new RegExp(
     `^[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$`
   );
@@ -247,42 +245,37 @@ function controlForm() {
   getCart();
   if (items.length <= 0) {
     alert("Votre panier est vide");
-    failed;
+    return failed;
   }
   if (!regexName.test(dataForm.firstName)) {
     invalidFirstName();
-    failed;
+    return failed;
   } else {
     validFirstName();
-    success;
   }
   if (!regexName.test(dataForm.lastName)) {
     invalidLastName();
-    failed;
+    return failed;
   } else {
     validLastName();
-    success;
   }
   if (!regexAddress.test(dataForm.address)) {
     invalidAddress();
-    failed;
+    return failed;
   } else {
     validAddress();
-    success;
   }
   if (!regexCity.test(dataForm.city)) {
     invalidCity();
-    failed;
+    return failed;
   } else {
     validCity();
-    success;
   }
   if (!regexEmail.test(dataForm.email)) {
     invalidEmail();
-    failed;
+    return failed;
   } else {
     validEmail();
-    success;
   }
   return success;
 }
@@ -344,4 +337,3 @@ const validEmail = () => {
   emailErrorMsg.textContent = "";
 };
 
-controlForm();
